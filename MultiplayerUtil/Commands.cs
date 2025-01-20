@@ -7,61 +7,96 @@ using UnityEngine;
 using Steamworks.Data;
 using Steamworks;
 using TMPro;
+using GameConsole;
 
 
 namespace MultiplayerUtil
 {
-    public class Commands
+    public class Command
     {
         public static void Register()
         {
-            GameConsole.Console.Instance.RegisterCommand(new ListLobbys());
+            var nestedTypes = typeof(Commands).GetNestedTypes();
+
+            GameConsole.Console.Instance.RegisterCommands(nestedTypes.Where(_ => typeof(ICommand).IsAssignableFrom(_)).
+                Select(_ => Activator.CreateInstance(_) as GameConsole.ICommand).
+                Where(_ =>_!=null)
+                .ToList()
+            );
         }
     }
-
-
-    public class ListLobbys : GameConsole.ICommand
+    public class Commands
     {
-        public string Name
+        public class SM : GameConsole.ICommand
         {
-            get
+            public string Name => "SendMessage";
+
+            public string Description => "";
+
+            public string Command => "SM";
+
+            public async void Execute(GameConsole.Console con, string[] args)
             {
-                return "ListLobbys";
+                MultiplayerUtil.LobbyManager.SendMessage(string.Join(" ",  args));
             }
         }
-        public string Description
+        public class JoinLobby : GameConsole.ICommand
         {
-            get
+            public string Name => "JoinLobby";
+
+            public string Description => "";
+
+            public string Command => "JoinLobby";
+
+            public async void Execute(GameConsole.Console con, string[] args)
             {
-                return "";
+                MultiplayerUtil.LobbyManager.JoinLobbyWithID(ulong.Parse(args[0]));
             }
         }
-        public string Command
+        public class CreateLobby : GameConsole.ICommand
         {
-            get
+            public string Name => "CreateLobby";
+            
+            public string Description => "";
+
+            public string Command => "CreateLobby";
+             
+            public async void Execute(GameConsole.Console con, string[] args)
             {
-                return "LL";
+                MultiplayerUtil.LobbyManager.SetSettings("GAHHHHHHHHHHH", 3, true, true, false, false, ("Idk", "idk"));
+                MultiplayerUtil.LobbyManager.CreateLobby();
             }
         }
-        public async void Execute(GameConsole.Console con, string[] args)
+
+        public class ListLobbys : GameConsole.ICommand
         {
-            List<Lobby> getthingy = getthingy = await MultiplayerUtil.LobbyManager.FetchLobbies(("Idk", "idk"));
+            public string Name => "ListLobbys";
 
-
-            foreach (Lobby lob in getthingy)
+            public string Description => "";
+            
+            public string Command => "LL";
+            
+            public async void Execute(GameConsole.Console con, string[] args)
             {
-                Debug.Log("-------------------");
+                List<Lobby> getthingy = getthingy = await MultiplayerUtil.LobbyManager.FetchLobbies(("Idk", "idk"));
 
-                Debug.Log($"Lobby name: {lob.Data.Where(kvp => kvp.Key == "name" && !string.IsNullOrEmpty(kvp.Value))
-                             .Select(kvp => kvp.Value)
-                             .FirstOrDefault()} ");
 
-                Debug.Log($"Members: {lob.Data.Where(kvp => kvp.Key == "members" && !string.IsNullOrEmpty(kvp.Value))
-                             .Select(kvp => kvp.Value)
-                             .FirstOrDefault()} ");
+                foreach (Lobby lob in getthingy)
+                {
+                    Debug.Log("-------------------");
 
-                Debug.Log($"Id: {lob.Id}");
+                    Debug.Log($"Lobby name: {lob.Data.Where(kvp => kvp.Key == "name" && !string.IsNullOrEmpty(kvp.Value))
+                                 .Select(kvp => kvp.Value)
+                                 .FirstOrDefault()} ");
+
+                    Debug.Log($"Members: {lob.Data.Where(kvp => kvp.Key == "members" && !string.IsNullOrEmpty(kvp.Value))
+                                 .Select(kvp => kvp.Value)
+                                 .FirstOrDefault()} ");
+
+                    Debug.Log($"Id: {lob.Id}");
+                }
             }
         }
     }
+   
 }

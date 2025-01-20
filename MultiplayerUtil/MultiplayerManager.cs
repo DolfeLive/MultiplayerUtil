@@ -56,7 +56,7 @@ public class SteamManager : MonoBehaviour
         instance = this;
         Callbacks();
 
-        Commands.Register();
+        Command.Register();
 
         StartupComplete?.Invoke();
     }
@@ -70,6 +70,7 @@ public class SteamManager : MonoBehaviour
 
         }
     }
+
     void Callbacks()
     {
         SteamMatchmaking.OnLobbyMemberJoined += (l, f) =>
@@ -399,6 +400,10 @@ public class SteamManager : MonoBehaviour
             }
         }
         current_lobby?.Leave();
+    }
+    public void SendChatMessage(string msg)
+    {
+        current_lobby?.SendChatString(msg);
     }
 }
 

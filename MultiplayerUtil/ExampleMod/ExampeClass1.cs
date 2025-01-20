@@ -18,15 +18,6 @@ class ExampleClass1 : BaseUnityPlugin
     {
         this.gameObject.hideFlags = HideFlags.HideAndDontSave;
         instance = this;
-
-        SceneManager.sceneLoaded += (Scene scene, LoadSceneMode lsm) =>
-        {
-            if (SceneHelper.CurrentScene == "Main Menu")
-            {
-                MultiplayerUtil.LobbyManager.SetSettings("GAHHHHHHHHHHH", 3, true, true, false, false, ("Idk", "idk"));
-                MultiplayerUtil.LobbyManager.CreateLobby();
-            }
-        };
         
     }
     // 109775242898874045

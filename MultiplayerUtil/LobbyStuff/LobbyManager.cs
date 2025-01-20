@@ -58,4 +58,15 @@ public static class LobbyManager
         return foundLobbies;
     }
 
+    public static void JoinLobbyWithID(ulong id)
+    {
+        Clogger.Log("Joining Lobby");
+
+        SteamManager.instance.JoinLobbyWithID(id);
+    }
+
+    public static void SendMessage(string msg)
+    {
+        SteamManager.instance.SendChatMessage(msg);
+    }
 }
