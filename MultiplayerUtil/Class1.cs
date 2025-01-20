@@ -25,17 +25,26 @@ public class Class1 : BaseUnityPlugin
 
     void Awake()
     {
+        //this.gameObject.hideFlags = HideFlags.HideAndDontSave;
         instance = this;
+
 
         Semtings.Init();
 
         Harmony har = new Harmony("MultiplayerUtil");
         har.PatchAll();
 
-        GameObject smObj = new GameObject("SteamManager PVP mod");
-        smObj.AddComponent<SteamManager>();
-        DontDestroyOnLoad(smObj);
 
+       
 
+        SceneManager.sceneLoaded += (Scene scene, LoadSceneMode lsm) =>
+        {
+            if (SceneHelper.CurrentScene == "Main Menu")
+            {
+                GameObject smObj = new GameObject("SteamManager PVP mod");
+                smObj.AddComponent<SteamManager>();
+                DontDestroyOnLoad(smObj);
+            }
+        };
     }
 }

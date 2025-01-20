@@ -8,6 +8,7 @@ using BepInEx;
 using MultiplayerUtil;
 using Steamworks.Data;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ExampleMod;
 
@@ -15,27 +16,35 @@ namespace ExampleMod;
 class ExampleClass1 : BaseUnityPlugin
 {
     public static ExampleClass1 instance;
-    void Awake()
+    void Start()
     {
+        this.gameObject.hideFlags = HideFlags.HideAndDontSave;
         instance = this;
-        MultiplayerUtil.LobbyManager.SetSettings("GAHHHHHHHHHHH", 3, true, true, false, false, ("Idk", "idk"));
-        MultiplayerUtil.LobbyManager.CreateLobby();
 
-
-        MultiplayerUtil.SteamManager.instance.StartupComplete += () =>
+        SceneManager.sceneLoaded += (Scene scene, LoadSceneMode lsm) =>
         {
-            StartCoroutine(GetLobbyStuff());
-        };
-    }
+            if (SceneHelper.CurrentScene == "Main Menu")
+            {
+                MultiplayerUtil.LobbyManager.SetSettings("GAHHHHHHHHHHH", 3, true, true, false, false, ("Idk", "idk"));
+                MultiplayerUtil.LobbyManager.CreateLobby();
 
-    IEnumerator GetLobbyStuff()
-    {
-        yield return null;
+                GetLobbyStuff();
+            }
+        };
         
-        List<Lobby> getthingy = new List<Lobby>();
-        
-        getthingy = MultiplayerUtil.LobbyManager.FetchLobbies(("Idk", "idk")).Result;
-        
-        print($"{JsonUtility.ToJson(getthingy.Select(_ => _.Owner))}");
+    }
+    // 109775242898874045
+    async void GetLobbyStuff()
+    {        
+        List<Lobby> getthingy = getthingy = await MultiplayerUtil.LobbyManager.FetchLobbies(("Idk", "idk"));
+
+
+        print($"{
+            JsonUtility.ToJson(
+                new {
+                        Owners = getthingy.Select(_ => _.Owner).ToArray()
+                    } 
+                )
+            }");
     }
 }

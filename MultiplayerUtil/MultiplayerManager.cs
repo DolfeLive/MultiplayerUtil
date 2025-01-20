@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Collections;
 using Clogger = MultiplayerUtil.Logger;
 using System.Text.Json;
+using UnityEngine.Events;
 
 namespace MultiplayerUtil;
 
@@ -19,10 +20,10 @@ public class SteamManager : MonoBehaviour
 {
     public static SteamManager instance;
 
-    public Action StartupComplete;
 
     public float importantUpdatesASec = 64;
     public float unimportantUpdatesASec = 0.5f;
+
     // Runtime
     public Lobby? current_lobby;
 
@@ -33,20 +34,29 @@ public class SteamManager : MonoBehaviour
     string LobbyName;
     int maxPlayers;
     bool publicLobby;
-    bool cracked; 
+    bool cracked;
     public Coroutine? dataLoop;
-    
+
     private Serveier server;
     private Client client;
+
+    public class ObjectUnityEvent : UnityEvent<object> {}
+
+    public ObjectUnityEvent p2pMessageRecived = new ObjectUnityEvent();
+    public UnityEvent TimeToSendImportantData = new UnityEvent();
+    public UnityEvent TimeToSendUnimportantData = new UnityEvent();
+    public UnityEvent StartupComplete = new UnityEvent();
 
     // End
 
     void Awake()
     {
+        DontDestroyOnLoad(this.gameObject);
+        //this.gameObject.hideFlags = HideFlags.HideAndDontSave;
         instance = this;
         Callbacks();
 
-        StartupComplete.Invoke();
+        StartupComplete?.Invoke();
     }
 
     public void ReInnit(bool cracked)
@@ -142,8 +152,7 @@ public class SteamManager : MonoBehaviour
     {
         if (dataLoop != null)
             yield break;
-
-
+        
         Clogger.Log("Data Loop Init Activated");
         float interval = 1f / importantUpdatesASec;
         float unimportantInterval = 1f / unimportantUpdatesASec;
@@ -157,7 +166,7 @@ public class SteamManager : MonoBehaviour
             float startTime = Time.time;
 
             //DataSend();
-            TimeToSendImportantData.Invoke();
+            TimeToSendImportantData?.Invoke();
 
 
             if (isLobbyOwner)
@@ -166,7 +175,7 @@ public class SteamManager : MonoBehaviour
 
                 if (unimportantTimeElapsed >= unimportantInterval)
                 {
-                    TimeToSendUnimportantData.Invoke();
+                    TimeToSendUnimportantData?.Invoke();
                     Clogger.Log($"Lobby members: {current_lobby?.Members}");
                     current_lobby?.SetData("members", $"{current_lobby?.Members.Count()}/{maxPlayers}");
                     unimportantTimeElapsed = 0f;
@@ -194,14 +203,12 @@ public class SteamManager : MonoBehaviour
         while (true)
         {
             object data = CheckForP2PMessages();
-            p2pMessageRecived.Invoke(data);
+            p2pMessageRecived?.Invoke(data);
 
             yield return null;
         }
     }
-    public Action<object> p2pMessageRecived;
-    public Action TimeToSendImportantData;
-    public Action TimeToSendUnimportantData;
+
     private void DataSend(object serialisedData)
     {
         try
