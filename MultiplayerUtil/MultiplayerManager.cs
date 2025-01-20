@@ -20,7 +20,6 @@ public class SteamManager : MonoBehaviour
     public static SteamManager instance;
     public float importantUpdatesASec = 64;
     public float unimportantUpdatesASec = 0.5f;
-    bool loadScene = true; // For testing
     // Runtime
     public Lobby? current_lobby;
 
@@ -43,8 +42,6 @@ public class SteamManager : MonoBehaviour
     {
         instance = this;
         Callbacks();
-
-        //playerName = SteamClient.Name;
     }
 
     public void ReInnit(bool cracked)
@@ -56,7 +53,6 @@ public class SteamManager : MonoBehaviour
 
         }
     }
-
     void Callbacks()
     {
         SteamMatchmaking.OnLobbyMemberJoined += (l, f) =>
@@ -300,8 +296,6 @@ public class SteamManager : MonoBehaviour
         current_lobby?.SetData("members", $"1/{maxPlayers}");
 
         Clogger.Log($"Lobby Created, id: {current_lobby?.Id}");
-
-        LoadMultiplayerScene();
     }
 
     // Help collected from jaket github https://github.com/xzxADIxzx/Join-and-kill-em-together/blob/main/src/Jaket/Net/LobbyController.cs
@@ -319,7 +313,6 @@ public class SteamManager : MonoBehaviour
                 Clogger.Log($"Lobby join Success: {result}");
                 isLobbyOwner = false;
                 current_lobby = lob;
-                LoadMultiplayerScene();
 
                 client = new Client();
             }
@@ -363,31 +356,6 @@ public class SteamManager : MonoBehaviour
     }
 
     public static void InviteFriend() => SteamFriends.OpenGameInviteOverlay(SteamManager.instance.current_lobby.Value.Id);
-
-    public void LoadMultiplayerScene()
-    {
-        if (loadScene == false) return;
-
-        string[] scenePaths = Class1.sceneBundle.GetAllScenePaths();
-        if (scenePaths.Length > 0)
-        {
-            string sceneName = Path.GetFileNameWithoutExtension(scenePaths.FirstOrDefault());
-
-            if (!string.IsNullOrEmpty(sceneName))
-            {
-                Clogger.Log($"Found scene: {sceneName}");
-                UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
-            }
-            else
-            {
-                Clogger.LogWarning("Scene 'PVPWorld' not found.");
-            }
-        }
-        else
-        {
-            Clogger.LogWarning("No scenes found in the scene bundle.");
-        }
-    }
 
     void OnApplicationQuit()
     {

@@ -27,7 +27,7 @@ public class LobbyManager
         this.mods = mods;
         this.modIdentifier = modIdentifier;
     }
-    public async void CreateLobby()
+    public void CreateLobby()
     {
         Clogger.Log("Creating Lobby");
         
