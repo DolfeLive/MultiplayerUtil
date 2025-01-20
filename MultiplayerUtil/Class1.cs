@@ -35,7 +35,6 @@ public class Class1 : BaseUnityPlugin
         har.PatchAll();
 
 
-       
 
         SceneManager.sceneLoaded += (Scene scene, LoadSceneMode lsm) =>
         {

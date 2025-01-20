@@ -56,6 +56,8 @@ public class SteamManager : MonoBehaviour
         instance = this;
         Callbacks();
 
+        Commands.Register();
+
         StartupComplete?.Invoke();
     }
 
