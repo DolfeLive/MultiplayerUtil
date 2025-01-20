@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using UnityEngine;
-
+using Clogger = MultiplayerUtil.Logger;
 
 
 namespace MultiplayerUtil;
@@ -153,14 +153,21 @@ public static class Data
     public static T Deserialize<T>(byte[] serializedData)
     {
         if (serializedData == null || serializedData.Length == 0)
+        {
+            Clogger.LogError("Failed to deserialize data! Try making the data object class serializable!");
             throw new ArgumentException("Serialized data cannot be null or empty.", nameof(serializedData));
+        }
 
         return JsonSerializer.Deserialize<T>(System.Text.Encoding.UTF8.GetString(serializedData));
     }
 
     public static byte[] Serialize(object data)
     {
-        if (data == null) throw new ArgumentNullException(nameof(data));
+        if (data == null)
+        {
+            Clogger.LogError("Failed to serialize data! Try making the data object class serializable!");
+            throw new ArgumentNullException(nameof(data));
+        }
         return System.Text.Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data));
     }
 }

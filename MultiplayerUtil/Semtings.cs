@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using BepInEx;
 using UnityEngine;
+using Clogger = MultiplayerUtil.Logger;
 
 namespace MultiplayerUtil;
 
@@ -16,7 +17,7 @@ public static class Semtings
         {
             if (string.IsNullOrEmpty(Paths.ConfigPath))
             {
-                Debug.LogError("Config path is not initialized!");
+                Clogger.LogError("Config path is not initialized!");
                 return;
             }
 
@@ -35,7 +36,7 @@ public static class Semtings
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Error in Init(): {ex.Message}");
+            Clogger.LogError($"Error in Init(): {ex.Message}");
             Debug.LogException(ex);
         }
     }
@@ -54,7 +55,7 @@ public static class Semtings
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Failed to create settings file: {ex.Message}");
+            Clogger.LogError($"Failed to create settings file: {ex.Message}");
         }
     }
 
@@ -67,7 +68,7 @@ public static class Semtings
 
             if (settings == null)
             {
-                Debug.LogError("Failed to deserialize settings. Creating default.");
+                Clogger.LogError("Failed to deserialize settings. Creating default.");
                 CreateDefaultSettingsFile();
                 return;
             }
@@ -76,7 +77,7 @@ public static class Semtings
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Error loading settings: {ex.Message}");
+            Clogger.LogError($"Error loading settings: {ex.Message}");
             CreateDefaultSettingsFile();
         }
     }

@@ -8,33 +8,33 @@ using System.Linq;
 
 namespace MultiplayerUtil;
 
-public class LobbyManager
+public static class LobbyManager
 {
-    string LobbyName;
-    int? maxPlayers;
-    bool publicLobby;
-    bool cracked;
-    bool cheats;
-    bool mods;
-    (string, string) modIdentifier;
-    public void SetSettings(string lobbyName, int? maxPlayers, bool publicLobby, bool cracked, bool cheats, bool mods, (string, string) modIdentifier)
+    static string LobbyName;
+    static int? maxPlayers;
+    static bool publicLobby;
+    static bool cracked;
+    static bool cheats;
+    static bool mods;
+    static (string, string) modIdentifier;
+    public static void SetSettings(string lobbyName, int? maxPlayers, bool publicLobby, bool cracked, bool cheats, bool mods, (string, string) modIdentifier)
     {
-        this.LobbyName = lobbyName;
-        this.maxPlayers = maxPlayers;
-        this.publicLobby = publicLobby;
-        this.cracked = cracked;
-        this.cheats = cheats;
-        this.mods = mods;
-        this.modIdentifier = modIdentifier;
+        LobbyManager.LobbyName = lobbyName;
+        LobbyManager.maxPlayers = maxPlayers;
+        LobbyManager.publicLobby = publicLobby;
+        LobbyManager.cracked = cracked;
+        LobbyManager.cheats = cheats;
+        LobbyManager.mods = mods;
+        LobbyManager.modIdentifier = modIdentifier;
     }
-    public void CreateLobby()
+    public static void CreateLobby()
     {
         Clogger.Log("Creating Lobby");
         
         SteamManager.instance.HostLobby(LobbyName, maxPlayers, publicLobby, cracked, cheats, mods, modIdentifier);
     }
 
-    public async Task<List<Lobby>> FetchLobbies((string, string) modIdentifierKVP)
+    public static async Task<List<Lobby>> FetchLobbies((string, string) modIdentifierKVP)
     {
         List<Lobby> foundLobbies = new List<Lobby>();
         try

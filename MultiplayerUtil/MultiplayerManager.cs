@@ -18,6 +18,9 @@ namespace MultiplayerUtil;
 public class SteamManager : MonoBehaviour
 {
     public static SteamManager instance;
+
+    public Action StartupComplete;
+
     public float importantUpdatesASec = 64;
     public float unimportantUpdatesASec = 0.5f;
     // Runtime
@@ -42,6 +45,8 @@ public class SteamManager : MonoBehaviour
     {
         instance = this;
         Callbacks();
+
+        StartupComplete.Invoke();
     }
 
     public void ReInnit(bool cracked)
