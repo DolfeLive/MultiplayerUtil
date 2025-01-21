@@ -27,6 +27,20 @@ namespace MultiplayerUtil
     }
     public class Commands
     {
+        
+        public class InviteFriend : GameConsole.ICommand
+        {
+            public string Name => "InviteFriend";
+
+            public string Description => "";
+
+            public string Command => "InviteFriend";
+
+            public async void Execute(GameConsole.Console con, string[] args)
+            {
+                MultiplayerUtil.LobbyManager.InviteFriend();
+            }
+        }
         public class SM : GameConsole.ICommand
         {
             public string Name => "SendMessage";

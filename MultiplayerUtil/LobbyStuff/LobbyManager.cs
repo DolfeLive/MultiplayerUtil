@@ -69,4 +69,9 @@ public static class LobbyManager
     {
         SteamManager.instance.SendChatMessage(msg);
     }
+
+    public static void InviteFriend()
+    {
+        SteamManager.instance.InviteFriend();
+    }
 }

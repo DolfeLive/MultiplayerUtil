@@ -21,7 +21,7 @@ public static class Semtings
                 return;
             }
 
-            modSettingPath = Path.Combine(Paths.ConfigPath, "UKCM", "Settings.cfg");
+            modSettingPath = Path.Combine(Paths.ConfigPath, "MultiplayerUtil", "Settings.cfg");
 
             Directory.CreateDirectory(Path.GetDirectoryName(modSettingPath));
 

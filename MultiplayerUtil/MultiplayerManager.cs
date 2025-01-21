@@ -370,7 +370,7 @@ public class SteamManager : MonoBehaviour
         return null;
     }
 
-    public static void InviteFriend() => SteamFriends.OpenGameInviteOverlay(SteamManager.instance.current_lobby.Value.Id);
+    public void InviteFriend() => SteamFriends.OpenGameInviteOverlay(SteamManager.instance.current_lobby.Value.Id);
 
     void OnApplicationQuit()
     {
