@@ -40,13 +40,6 @@ public class SteamManager : MonoBehaviour
     private Serveier server;
     private Client client;
 
-    public class ObjectUnityEvent : UnityEvent<object> {}
-
-    public ObjectUnityEvent p2pMessageRecived = new ObjectUnityEvent();
-    public UnityEvent TimeToSendImportantData = new UnityEvent();
-    public UnityEvent TimeToSendUnimportantData = new UnityEvent();
-    public UnityEvent StartupComplete = new UnityEvent();
-
     // End
 
     void Awake()
@@ -54,11 +47,11 @@ public class SteamManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
         //this.gameObject.hideFlags = HideFlags.HideAndDontSave;
         instance = this;
-        Callbacks();
+        SetupCallbacks();
 
         Command.Register();
 
-        StartupComplete?.Invoke();
+        Callbacks.StartupComplete?.Invoke();
     }
 
     public void ReInnit(bool cracked)
@@ -71,7 +64,7 @@ public class SteamManager : MonoBehaviour
         }
     }
 
-    void Callbacks()
+    void SetupCallbacks()
     {
         SteamMatchmaking.OnLobbyMemberJoined += (l, f) =>
         {
@@ -169,7 +162,7 @@ public class SteamManager : MonoBehaviour
             float startTime = Time.time;
 
             //DataSend();
-            TimeToSendImportantData?.Invoke();
+            Callbacks.TimeToSendImportantData?.Invoke();
 
 
             if (isLobbyOwner)
@@ -178,7 +171,7 @@ public class SteamManager : MonoBehaviour
 
                 if (unimportantTimeElapsed >= unimportantInterval)
                 {
-                    TimeToSendUnimportantData?.Invoke();
+                    Callbacks.TimeToSendUnimportantData?.Invoke();
                     Clogger.Log($"Lobby members: {current_lobby?.Members}");
                     current_lobby?.SetData("members", $"{current_lobby?.Members.Count()}/{maxPlayers}");
                     unimportantTimeElapsed = 0f;
@@ -206,13 +199,13 @@ public class SteamManager : MonoBehaviour
         while (true)
         {
             object data = CheckForP2PMessages();
-            p2pMessageRecived?.Invoke(data);
+            Callbacks.p2pMessageRecived?.Invoke(data);
 
             yield return null;
         }
     }
 
-    private void DataSend(object serialisedData)
+    public void DataSend(object serialisedData)
     {
         try
         {
@@ -374,6 +367,10 @@ public class SteamManager : MonoBehaviour
 
     void OnApplicationQuit()
     {
+        Disconnect();
+    }
+    public void Disconnect()
+    {
         if (isLobbyOwner)
         {
             if (server.besties.Count > 0)
@@ -386,7 +383,7 @@ public class SteamManager : MonoBehaviour
                 current_lobby?.SendChatString($"||| Setting Lobby Owner To: {server.besties[0].Name}");
                 current_lobby?.SetData("Owner", server.besties[0].Name);
                 current_lobby?.IsOwnedBy(server.besties[0].Id);
-                
+
                 Clogger.Log($"Setting Lobby Owner to: {server.besties[0].Name}");
 
             }
@@ -408,4 +405,12 @@ public class SteamManager : MonoBehaviour
 }
 
 
+public static class Callbacks
+{
+    public class ObjectUnityEvent : UnityEvent<object> { }
 
+    public static ObjectUnityEvent p2pMessageRecived = new ObjectUnityEvent();
+    public static UnityEvent TimeToSendImportantData = new UnityEvent();
+    public static UnityEvent TimeToSendUnimportantData = new UnityEvent();
+    public static UnityEvent StartupComplete = new UnityEvent();
+}

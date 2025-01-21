@@ -10,13 +10,24 @@ namespace MultiplayerUtil;
 
 public static class LobbyManager
 {
-    static string LobbyName;
+    static string LobbyName = "New Lobby";
     static int? maxPlayers;
-    static bool publicLobby;
-    static bool cracked;
-    static bool cheats;
-    static bool mods;
-    static (string, string) modIdentifier;
+    static bool publicLobby = false;
+    static bool cracked = false;
+    static bool cheats = false;
+    static bool mods = false;
+    static (string, string) modIdentifier = ("null", "null");
+
+    /// <summary>
+    /// Sets the settings for creating a lobby.
+    /// </summary>
+    /// <param name="lobbyName">The name of the lobby.</param>
+    /// <param name="maxPlayers">The maximum number of players allowed in the lobby. If null defaults to 8.</param>
+    /// <param name="publicLobby">Indicates whether the lobby is public or private.</param>
+    /// <param name="cracked">Indicates if the server will run be joinable by cracked clients or offical.</param>
+    /// <param name="cheats">Indicates whether cheats are enabled in the lobby.</param>
+    /// <param name="mods">Indicates whether mods are enabled in the lobby.</param>
+    /// <param name="modIdentifier">The identifier your mod uses when making a lobby</param>
     public static void SetSettings(string lobbyName, int? maxPlayers, bool publicLobby, bool cracked, bool cheats, bool mods, (string, string) modIdentifier)
     {
         LobbyManager.LobbyName = lobbyName;
@@ -27,6 +38,9 @@ public static class LobbyManager
         LobbyManager.mods = mods;
         LobbyManager.modIdentifier = modIdentifier;
     }
+    /// <summary>
+    /// Creates a lobby with the set settings
+    /// </summary>
     public static void CreateLobby()
     {
         Clogger.Log("Creating Lobby");
@@ -34,6 +48,10 @@ public static class LobbyManager
         SteamManager.instance.HostLobby(LobbyName, maxPlayers, publicLobby, cracked, cheats, mods, modIdentifier);
     }
 
+    /// <summary>
+    /// returns a list of all lobbies matching your mods lobby identifier
+    /// </summary>
+    /// <param name="modIdentifierKVP">The identifier your mod uses when making a lobby</param>
     public static async Task<List<Lobby>> FetchLobbies((string, string) modIdentifierKVP)
     {
         List<Lobby> foundLobbies = new List<Lobby>();
@@ -58,6 +76,10 @@ public static class LobbyManager
         return foundLobbies;
     }
 
+    /// <summary>
+    /// Joins a lobby with the specified ulong id
+    /// </summary>
+    /// <param name="id">The lobby id</param>
     public static void JoinLobbyWithID(ulong id)
     {
         Clogger.Log("Joining Lobby");
@@ -65,13 +87,23 @@ public static class LobbyManager
         SteamManager.instance.JoinLobbyWithID(id);
     }
 
-    public static void SendMessage(string msg)
+    /// <summary>
+    /// Send a chat message
+    /// </summary>
+    /// <param name="msg">Sends a chat message to the current lobby</param>
+    public static void SendMessage(string msg) => SteamManager.instance.SendMessage(msg);
+
+
+    /// <summary>
+    /// Send data to connected p2p players
+    /// </summary>
+    /// <param name="data">The data object to be sent. MAKE SURE ITS SERIALISED</param>
+    public static void SendData(object data)
     {
-        SteamManager.instance.SendChatMessage(msg);
+        SteamManager.instance.DataSend(data);
     }
 
-    public static void InviteFriend()
-    {
-        SteamManager.instance.InviteFriend();
-    }
+    public static void InviteFriend() => SteamManager.instance.InviteFriend();
+
+    public static void Disconnect() => SteamManager.instance.Disconnect();
 }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
-using MultiplayerUtil;
+using MU = MultiplayerUtil;
 using Steamworks.Data;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,7 +18,31 @@ class ExampleClass1 : BaseUnityPlugin
     {
         this.gameObject.hideFlags = HideFlags.HideAndDontSave;
         instance = this;
-        
+
+        MU.Callbacks.TimeToSendImportantData.AddListener(() => 
+        {
+
+            object data = MU.Data.Serialize(counter);
+
+            MU.LobbyManager.SendData(data);
+        });
+
+
+        StartCoroutine(Couting());
+    }
+    public int counter = 0;
+    public bool Server = false;
+
+    IEnumerator Couting()
+    {
+        while (true)
+        {
+            counter++;
+            
+
+
+            yield return null;
+        }
     }
     // 109775242898874045
 }
