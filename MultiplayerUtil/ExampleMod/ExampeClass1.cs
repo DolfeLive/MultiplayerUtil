@@ -6,6 +6,7 @@ using BepInEx;
 using MU = MultiplayerUtil;
 using Steamworks.Data;
 using UnityEngine;
+using MultiplayerUtil;
 
 namespace ExampleMod;
 
@@ -35,18 +36,30 @@ class ExampleClass1 : BaseUnityPlugin
             }
         });
 
-        MU.Callbacks.p2pMessageRecived.AddListener((received) =>
+        MU.Callbacks.p2pMessageRecived.AddListener((dual) =>
         {
+            if ((dual.Item2.HasValue && dual.Item2.Value != LobbyManager.selfID) || !dual.Item2.HasValue)
+            {
+                return;
+            }
+
             try
             {
-                if (received != null)
+                if (dual.Item1 != null)
                 {
-                    CounterClass receivedCounter = MU.Data.Deserialize<CounterClass>((byte[])received);
+                    CounterClass receivedCounter = MU.Data.Deserialize<CounterClass>((byte[])dual.Item1);
                     Debug.Log($"Received counter value: {receivedCounter.counter}");
                 }
                 else
                 {
-                   //Debug.LogWarning($"Received null p2p message, {received}");
+                    if (dual.Item2.HasValue)
+                    {
+                        Debug.LogWarning($"Received null p2p message, {dual.Item1}, sender: {dual.Item2.Value}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Received null p2p message, {dual.Item1}, sender: Unknown");
+                    }
                 }
             }
             catch (Exception ex)

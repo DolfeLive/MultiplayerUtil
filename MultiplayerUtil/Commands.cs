@@ -108,6 +108,9 @@ namespace MultiplayerUtil
                                  .FirstOrDefault()} ");
 
                     Debug.Log($"Id: {lob.Id}");
+                    Debug.Log($"Owner:{lob.Data.Where(kvp => kvp.Key == "Owner" && !string.IsNullOrEmpty(kvp.Value))
+                                .Select(kvp => kvp.Value)
+                                .FirstOrDefault()}");
                 }
             }
         }

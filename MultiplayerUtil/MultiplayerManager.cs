@@ -20,7 +20,7 @@ public class SteamManager : MonoBehaviour
 
 
     public float importantUpdatesASec = 64;
-    public float unimportantUpdatesASec = 1f;
+    public float unimportantUpdatesASec = 0.2f;
 
     // Runtime
     public Lobby? current_lobby;
@@ -157,9 +157,9 @@ public class SteamManager : MonoBehaviour
 
         Coroutine checkloop = StartCoroutine(CheckForP2PLoop());
 
+        float startTime = Time.time;
         while (true)
         {
-            float startTime = Time.time;
 
             //DataSend();
             Callbacks.TimeToSendImportantData?.Invoke();
@@ -172,7 +172,7 @@ public class SteamManager : MonoBehaviour
                 if (unimportantTimeElapsed >= unimportantInterval)
                 {
                     Callbacks.TimeToSendUnimportantData?.Invoke();
-                    Clogger.Log($"Lobby members: {current_lobby?.Members}");
+                    //Clogger.Log($"Lobby members: {current_lobby?.Members.Count()}");
                     current_lobby?.SetData("members", $"{current_lobby?.Members.Count()}/{maxPlayers}");
                     unimportantTimeElapsed = 0f;
                 }
@@ -198,7 +198,7 @@ public class SteamManager : MonoBehaviour
     {
         while (true)
         {
-            byte[] data = CheckForP2PMessages();
+            (byte[], SteamId?) data = CheckForP2PMessages();
             Callbacks.p2pMessageRecived?.Invoke(data);
 
             yield return null;
@@ -211,10 +211,10 @@ public class SteamManager : MonoBehaviour
         {
             if (current_lobby != null)
             {
-                if (!isLobbyOwner)
-                    client.Send(serialisedData);
-                else
+                if (isLobbyOwner)
                     server.Send(serialisedData);
+                else
+                    client.Send(serialisedData);
             }
             else
             {
@@ -292,6 +292,7 @@ public class SteamManager : MonoBehaviour
         current_lobby = createdLobby;
 
         current_lobby?.SetJoinable(true);
+
         if (publicLobby)
             current_lobby?.SetPublic();
         else
@@ -335,7 +336,7 @@ public class SteamManager : MonoBehaviour
         }
     }
     
-    public byte[] CheckForP2PMessages()
+    public (byte[], SteamId?) CheckForP2PMessages()
     {
         SteamId steamId = new SteamId();
         int channel = 0;
@@ -344,19 +345,30 @@ public class SteamManager : MonoBehaviour
         {
             while (SteamNetworking.IsP2PPacketAvailable(out uint availableSize, channel))
             {
-                if (steamId == selfID) continue;
 
                 byte[] buffer = new byte[availableSize];
-                SteamNetworking.ReadP2PPacket(buffer, ref availableSize, ref steamId, channel);
+                bool worked = SteamNetworking.ReadP2PPacket(buffer, ref availableSize, ref steamId, channel);
 
-                return buffer;
+                if (worked)
+                {
+                    Clogger.Log($"New p2p: {steamId}");
+                    if (steamId == selfID) continue;
+
+                    return (buffer, steamId);
+                }
+                else
+                {
+                    Clogger.Log($"p2p failed: {steamId}");
+
+                    return (null, null);
+                }
             }
         }
         catch (ArgumentException ae)
         {
             Clogger.LogError($"CheckForP2p Arg Exeption: {ae}");
         }
-        return null;
+        return (null, null);
     }
 
     public void InviteFriend() => SteamFriends.OpenGameInviteOverlay(SteamManager.instance.current_lobby.Value.Id);
@@ -403,13 +415,13 @@ public class SteamManager : MonoBehaviour
 
 public static class Callbacks
 {
-    public class ObjectUnityEvent : UnityEvent<byte[]> { }
+    public class SenderUnityEvent : UnityEvent<(byte[], SteamId?)> { }
 
     /// <summary>
     ///  Actives when a p2p message is revied, the returned object IS serialized
     ///  Use Data.Deserialize
     /// </summary>
-    public static ObjectUnityEvent p2pMessageRecived = new ObjectUnityEvent();
+    public static SenderUnityEvent p2pMessageRecived = new SenderUnityEvent();
 
     /// <summary>
     /// Activates on the updateIterval
