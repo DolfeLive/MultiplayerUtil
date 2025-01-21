@@ -20,7 +20,7 @@ public static class LobbyManager
 
     public static bool isLobbyOwner => SteamManager.instance.isLobbyOwner;
     public static Lobby? current_lobby => SteamManager.instance.current_lobby;
-    public static SteamId selfID => SteamManager.instance.selfID;
+    public static SteamId selfID =>SteamManager.instance.selfID;
 
     public static float importantUpdatesASec
     {
@@ -142,7 +142,22 @@ public static class LobbyManager
         SteamManager.instance.DataSend(data);
     }
 
+    /// <summary>
+    /// Opens steam invite friend menu
+    /// </summary>
     public static void InviteFriend() => SteamManager.instance.InviteFriend();
 
+    /// <summary>
+    /// Ditto
+    /// </summary>
     public static void Disconnect() => SteamManager.instance.Disconnect();
+
+    /// <summary>
+    /// Reinnits steam for use when switing between cracked or not
+    /// </summary>
+    /// <param name="cracked">if it should innit with appid 480 or ultrakill</param>
+    public static void ReInnitSteamClient(bool cracked)
+    {
+        SteamManager.instance.ReInnit(cracked);
+    }
 }

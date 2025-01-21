@@ -22,7 +22,7 @@ class ExampleClass1 : BaseUnityPlugin
         instance = this;
         counter = new CounterClass();
         Clogger.Log("Test");
-        MU.Callbacks.TimeToSendUnimportantData.AddListener(() =>
+        MU.Callbacks.TimeToSendUnimportantData.AddListener(() => 
         {
             if (!MU.LobbyManager.isLobbyOwner) return;
 

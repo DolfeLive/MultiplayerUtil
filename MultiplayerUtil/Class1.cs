@@ -25,16 +25,12 @@ public class Class1 : BaseUnityPlugin
 
     void Awake()
     {
-        //this.gameObject.hideFlags = HideFlags.HideAndDontSave;
         instance = this;
-
-
+        
         Semtings.Init();
 
         Harmony har = new Harmony("MultiplayerUtil");
         har.PatchAll();
-
-
 
         SceneManager.sceneLoaded += (Scene scene, LoadSceneMode lsm) =>
         {

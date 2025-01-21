@@ -24,9 +24,7 @@ public class Serveier // Read it like its french, also yes i named it this on pu
         }
         else
         {
-            serializedData = System.Text.Encoding.UTF8.GetBytes(
-                System.Text.Json.JsonSerializer.Serialize(data)
-            );
+            serializedData = Data.Serialize(data);
         }
 
 

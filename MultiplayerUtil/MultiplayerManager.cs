@@ -19,7 +19,7 @@ public class SteamManager : MonoBehaviour
     public static SteamManager instance;
 
 
-    public float importantUpdatesASec = 64;
+    public float importantUpdatesASec = 32;
     public float unimportantUpdatesASec = 0.2f;
 
     // Runtime
@@ -48,8 +48,6 @@ public class SteamManager : MonoBehaviour
         SetupCallbacks();
 
         Command.Register();
-
-        selfID = SteamClient.SteamId;
 
         Callbacks.StartupComplete?.Invoke();
     }
@@ -347,7 +345,6 @@ public class SteamManager : MonoBehaviour
         {
             while (SteamNetworking.IsP2PPacketAvailable(out uint availableSize, channel))
             {
-                //Debug.Log($"P2P packet available, size: {availableSize}");
 
                 byte[] buffer = new byte[availableSize];
                 bool worked = SteamNetworking.ReadP2PPacket(buffer, ref availableSize, ref steamId, channel);

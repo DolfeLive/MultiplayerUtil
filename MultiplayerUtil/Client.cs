@@ -34,9 +34,8 @@ public class Client
         }
         else
         {
-            serializedData = System.Text.Encoding.UTF8.GetBytes(
-                System.Text.Json.JsonSerializer.Serialize(data)
-            );
+
+            serializedData = Data.Serialize(data);
         }
 
         foreach (var peerId in connectedPeers)
