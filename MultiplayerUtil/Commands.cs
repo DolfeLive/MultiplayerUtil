@@ -60,7 +60,7 @@ namespace MultiplayerUtil
 
             public string Description => "";
 
-            public string Command => "JoinLobby";
+            public string Command => "JL";
 
             public async void Execute(GameConsole.Console con, string[] args)
             {
@@ -73,7 +73,7 @@ namespace MultiplayerUtil
             
             public string Description => "";
 
-            public string Command => "CreateLobby";
+            public string Command => "CL";
              
             public async void Execute(GameConsole.Console con, string[] args)
             {

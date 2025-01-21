@@ -18,6 +18,45 @@ public static class LobbyManager
     static bool mods = false;
     static (string, string) modIdentifier = ("null", "null");
 
+    public static bool isLobbyOwner => SteamManager.instance.isLobbyOwner;
+    public static Lobby? current_lobby => SteamManager.instance.current_lobby;
+    public static SteamId selfID =>SteamManager.instance.selfID;
+
+    public static float importantUpdatesASec
+    {
+        get
+        {
+            return SteamManager.instance.importantUpdatesASec;
+        }
+        set
+        {
+            SteamManager.instance.importantUpdatesASec = value;
+            restartLoop();
+        }
+    }
+
+    public static float unimportantUpdatesASec
+    {
+        get
+        {
+            return SteamManager.instance.unimportantUpdatesASec;
+        }
+        set
+        {
+            SteamManager.instance.unimportantUpdatesASec = value;
+            restartLoop();
+        }
+    }
+
+    private static void restartLoop()
+    { 
+        if (SteamManager.instance.dataLoop != null)
+        {
+            SteamManager.instance.StopCoroutine(SteamManager.instance.dataLoop);
+            SteamManager.instance.dataLoop = SteamManager.instance.StartCoroutine(SteamManager.instance.DataLoopInit());
+        }
+    }
+
     /// <summary>
     /// Sets the settings for creating a lobby.
     /// </summary>
@@ -91,7 +130,7 @@ public static class LobbyManager
     /// Send a chat message
     /// </summary>
     /// <param name="msg">Sends a chat message to the current lobby</param>
-    public static void SendMessage(string msg) => SteamManager.instance.SendMessage(msg);
+    public static void SendMessage(string msg) => SteamManager.instance.SendChatMessage(msg);
 
 
     /// <summary>

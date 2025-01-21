@@ -16,9 +16,19 @@ public class Serveier // Read it like its french, also yes i named it this on pu
     }
     public void Send(object data)
     {
-        byte[] serializedData = System.Text.Encoding.UTF8.GetBytes(
-            System.Text.Json.JsonSerializer.Serialize(data)
-        );
+        byte[] serializedData;
+
+        if (data is byte[])
+        {
+            serializedData = (byte[])data;
+        }
+        else
+        {
+            serializedData = System.Text.Encoding.UTF8.GetBytes(
+                System.Text.Json.JsonSerializer.Serialize(data)
+            );
+        }
+
 
         foreach (var bestie in besties)
         {

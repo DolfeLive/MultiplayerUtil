@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Text.Json;
+using System.Xml.Linq;
 using UnityEngine;
+using Newtonsoft.Json;
 using Clogger = MultiplayerUtil.Logger;
 
 
@@ -154,20 +156,46 @@ public static class Data
     {
         if (serializedData == null || serializedData.Length == 0)
         {
-            Clogger.LogError("Failed to deserialize data! Try making the data object class serializable!");
+            Clogger.LogError("Failed to deserialize data: Empty or null data received");
             throw new ArgumentException("Serialized data cannot be null or empty.", nameof(serializedData));
         }
 
-        return JsonSerializer.Deserialize<T>(System.Text.Encoding.UTF8.GetString(serializedData));
+        try
+        {
+            using (MemoryStream ms = new MemoryStream(serializedData))
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                return (T)formatter.Deserialize(ms);
+            }
+        }
+        catch (Exception ex)
+        {
+            Clogger.LogError($"Failed to deserialize data: {ex.Message}");
+            throw;
+        }
     }
 
     public static byte[] Serialize(object data)
     {
         if (data == null)
         {
-            Clogger.LogError("Failed to serialize data! Try making the data object class serializable!");
+            Clogger.LogError("Failed to serialize data: Null object provided");
             throw new ArgumentNullException(nameof(data));
         }
-        return System.Text.Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data));
+
+        try
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(ms, data);
+                return ms.ToArray();
+            }
+        }
+        catch (Exception ex)
+        {
+            Clogger.LogError($"Failed to serialize data: {ex.Message}");
+            throw;
+        }
     }
 }

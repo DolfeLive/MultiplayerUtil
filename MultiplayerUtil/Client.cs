@@ -26,9 +26,18 @@ public class Client
 
     public void Send(object data)
     {
-        byte[] serializedData = System.Text.Encoding.UTF8.GetBytes(
-                    System.Text.Json.JsonSerializer.Serialize(data)
-                );
+        byte[] serializedData;
+
+        if (data is byte[])
+        {
+            serializedData = (byte[])data;
+        }
+        else
+        {
+            serializedData = System.Text.Encoding.UTF8.GetBytes(
+                System.Text.Json.JsonSerializer.Serialize(data)
+            );
+        }
 
         foreach (var peerId in connectedPeers)
         {

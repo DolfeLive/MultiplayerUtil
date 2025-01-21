@@ -5,14 +5,12 @@ using UnityEngine;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using GameConsole.pcon;
 using MultiplayerUtil;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Collections;
 using Clogger = MultiplayerUtil.Logger;
-using System.Text.Json;
 using UnityEngine.Events;
+using GameConsole.pcon;
 
 namespace MultiplayerUtil;
 
@@ -22,7 +20,7 @@ public class SteamManager : MonoBehaviour
 
 
     public float importantUpdatesASec = 64;
-    public float unimportantUpdatesASec = 0.5f;
+    public float unimportantUpdatesASec = 1f;
 
     // Runtime
     public Lobby? current_lobby;
@@ -148,7 +146,9 @@ public class SteamManager : MonoBehaviour
     {
         if (dataLoop != null)
             yield break;
+
         
+
         Clogger.Log("Data Loop Init Activated");
         float interval = 1f / importantUpdatesASec;
         float unimportantInterval = 1f / unimportantUpdatesASec;
@@ -198,7 +198,7 @@ public class SteamManager : MonoBehaviour
     {
         while (true)
         {
-            object data = CheckForP2PMessages();
+            byte[] data = CheckForP2PMessages();
             Callbacks.p2pMessageRecived?.Invoke(data);
 
             yield return null;
@@ -335,30 +335,26 @@ public class SteamManager : MonoBehaviour
         }
     }
     
-    public object CheckForP2PMessages()
+    public byte[] CheckForP2PMessages()
     {
-        byte[] buffer = new byte[64];
-        uint size = (uint)buffer.Length;
         SteamId steamId = new SteamId();
         int channel = 0;
+
         try
         {
-            while (SteamNetworking.ReadP2PPacket(buffer, ref size, ref steamId, channel))
+            while (SteamNetworking.IsP2PPacketAvailable(out uint availableSize, channel))
             {
                 if (steamId == selfID) continue;
 
-                byte[] receivedData = new byte[size];
-                Array.Copy(buffer, receivedData, (int)size);
-                
-                var dataPacket = Data.Deserialize<string>(receivedData);
+                byte[] buffer = new byte[availableSize];
+                SteamNetworking.ReadP2PPacket(buffer, ref availableSize, ref steamId, channel);
 
-                Clogger.Log($"Received P2P message from {steamId}, Data: {JsonUtility.ToJson(dataPacket)}");
-
-                return dataPacket;
+                return buffer;
             }
         }
-        catch (ArgumentException)
+        catch (ArgumentException ae)
         {
+            Clogger.LogError($"CheckForP2p Arg Exeption: {ae}");
         }
         return null;
     }
@@ -407,10 +403,28 @@ public class SteamManager : MonoBehaviour
 
 public static class Callbacks
 {
-    public class ObjectUnityEvent : UnityEvent<object> { }
+    public class ObjectUnityEvent : UnityEvent<byte[]> { }
 
+    /// <summary>
+    ///  Actives when a p2p message is revied, the returned object IS serialized
+    ///  Use Data.Deserialize
+    /// </summary>
     public static ObjectUnityEvent p2pMessageRecived = new ObjectUnityEvent();
+
+    /// <summary>
+    /// Activates on the updateIterval
+    /// Use Data.Serialize
+    /// </summary>
     public static UnityEvent TimeToSendImportantData = new UnityEvent();
+
+    /// <summary>
+    /// Activated on unimportantUpdates
+    /// Use Data.Serialize
+    /// </summary>
     public static UnityEvent TimeToSendUnimportantData = new UnityEvent();
+    
+    /// <summary>
+    /// Activates when SteamManager is fully set up and ready to use, make code that uses these methods after this fires
+    /// </summary>
     public static UnityEvent StartupComplete = new UnityEvent();
 }

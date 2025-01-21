@@ -11,6 +11,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Text.Json" Version="9.0.1" />
   </ItemGroup>
 
@@ -69,10 +70,11 @@
     <Reference Include="UnityEngine.UIModule">
       <HintPath>..\..\..\..\Downloads\lib\UnityEngine.UIModule.dll</HintPath>
     </Reference>
+
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="Build">
-    <Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFolder="C:\Program Files (x86)\Steam\steamapps\common\ULTRAKILL\BepInEx\plugins\" />
+	  <Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFolder="C:\Program Files (x86)\Steam\steamapps\common\ULTRAKILL\BepInEx\plugins\" />
   </Target>
 
 </Project>

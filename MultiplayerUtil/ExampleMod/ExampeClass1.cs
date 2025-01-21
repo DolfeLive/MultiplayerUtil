@@ -6,7 +6,6 @@ using BepInEx;
 using MU = MultiplayerUtil;
 using Steamworks.Data;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace ExampleMod;
 
@@ -18,30 +17,69 @@ class ExampleClass1 : BaseUnityPlugin
     {
         this.gameObject.hideFlags = HideFlags.HideAndDontSave;
         instance = this;
-
-        MU.Callbacks.TimeToSendImportantData.AddListener(() => 
+        counter = new CounterClass();
+        
+        MU.Callbacks.TimeToSendUnimportantData.AddListener(() => 
         {
+            if (!MU.LobbyManager.isLobbyOwner) return;
 
-            object data = MU.Data.Serialize(counter);
+            try
+            {
+                byte[] data = MU.Data.Serialize(counter);
+                Debug.Log($"Sending counter value: {counter.counter}");
+                MU.LobbyManager.SendData(data);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to send data: {ex.Message}");
+            }
+        });
 
-            MU.LobbyManager.SendData(data);
+        MU.Callbacks.p2pMessageRecived.AddListener((received) =>
+        {
+            try
+            {
+                if (received != null)
+                {
+                    CounterClass receivedCounter = MU.Data.Deserialize<CounterClass>((byte[])received);
+                    Debug.Log($"Received counter value: {receivedCounter.counter}");
+                }
+                else
+                {
+                   //Debug.LogWarning($"Received null p2p message, {received}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to process received data: {ex.Message}");
+            }
         });
 
 
         StartCoroutine(Couting());
     }
-    public int counter = 0;
+
+    public CounterClass counter;
+
+    [Serializable]
+    public class CounterClass
+    {
+        public CounterClass()
+        {
+            this.counter = 0;
+        }
+        public int counter = 0;
+    }
+
     public bool Server = false;
 
     IEnumerator Couting()
     {
         while (true)
         {
-            counter++;
-            
+            counter.counter++;
 
-
-            yield return null;
+            yield return new WaitForSeconds(1f);
         }
     }
     // 109775242898874045
