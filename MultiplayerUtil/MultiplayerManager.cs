@@ -312,6 +312,7 @@ public class SteamManager : MonoBehaviour
     {
         try
         {
+            server = null;
             Clogger.Log("Joining Lobby with ID");
             Lobby lob = new Lobby(id);
 
@@ -327,6 +328,10 @@ public class SteamManager : MonoBehaviour
             }
             else
             {
+                current_lobby = null;
+                isLobbyOwner= false;
+                client = null;
+
                 Clogger.LogWarning($"Couldn't join the lobby. Result is {result}");
             }
         }
@@ -338,27 +343,35 @@ public class SteamManager : MonoBehaviour
     
     public (byte[], SteamId?) CheckForP2PMessages()
     {
-        SteamId steamId = new SteamId();
-        int channel = 0;
 
         try
         {
-            while (SteamNetworking.IsP2PPacketAvailable(out uint availableSize, channel))
+            while (SteamNetworking.IsP2PPacketAvailable(out uint availableSize, 0))
             {
+                SteamId Sender = new SteamId();
 
                 byte[] buffer = new byte[availableSize];
-                bool worked = SteamNetworking.ReadP2PPacket(buffer, ref availableSize, ref steamId, channel);
+                bool worked = SteamNetworking.ReadP2PPacket(buffer, ref availableSize, ref Sender, 0);
 
                 if (worked)
                 {
-                    Clogger.Log($"New p2p: {steamId}");
-                    if (steamId == selfID) continue;
+                    if (!Sender.IsValid)
+                    {
+                        Clogger.Log("Sender is null skipping");
+                        continue;
+                    }
+                    Clogger.Log($"New p2p: {Sender}");
+                    if (Sender == selfID)
+                    {
+                        Clogger.Log("P2p comes from self, skipping");
+                        continue;
+                    }
 
-                    return (buffer, steamId);
+                    return (buffer, Sender);
                 }
                 else
                 {
-                    Clogger.Log($"p2p failed: {steamId}");
+                    Clogger.Log($"p2p failed: {Sender}");
 
                     return (null, null);
                 }

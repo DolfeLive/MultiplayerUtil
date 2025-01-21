@@ -15,8 +15,6 @@ public static class Logger
     public static void LogWarning(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Warning);
     public static void LogError(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Error);
 
-
-
     private static void Log(string message, EType etype, ELogType eLogType = ELogType.Normal)
     {
         string callingNamespace = GetCallingNamespace();
