@@ -91,8 +91,7 @@ public class Commands
          
         public async void Execute(GameConsole.Console con, string[] args)
         {
-            MultiplayerUtil.LobbyManager.SetSettings("GAHHHHHHHHHHH", 3, true, true, false, false, ("Idk", "idk"));
-            MultiplayerUtil.LobbyManager.CreateLobby();
+            MultiplayerUtil.LobbyManager.CreateLobby("GAHHHHHHHHHHH", 3, true, true, false, false, ("Idk", "idk"));
         }
     }
 

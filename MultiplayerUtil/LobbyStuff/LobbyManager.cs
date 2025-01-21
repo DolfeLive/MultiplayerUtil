@@ -10,13 +10,13 @@ namespace MultiplayerUtil;
 
 public static class LobbyManager
 {
-    static string LobbyName = "New Lobby";
-    static int? maxPlayers;
-    static bool publicLobby = false;
-    static bool cracked = false;
-    static bool cheats = false;
-    static bool mods = false;
-    static (string, string) modIdentifier = ("null", "null");
+    //static string LobbyName = "New Lobby";
+    //static int? maxPlayers;
+    //static bool publicLobby = false;
+    //static bool cracked = false;
+    //static bool cheats = false;
+    //static bool mods = false;
+    //static (string, string) modIdentifier = ("null", "null");
 
     public static bool isLobbyOwner => SteamManager.instance.isLobbyOwner;
     public static Lobby? current_lobby => SteamManager.instance.current_lobby;
@@ -58,7 +58,7 @@ public static class LobbyManager
     }
 
     /// <summary>
-    /// Sets the settings for creating a lobby.
+    /// Creates a lobby with the set settings
     /// </summary>
     /// <param name="lobbyName">The name of the lobby.</param>
     /// <param name="maxPlayers">The maximum number of players allowed in the lobby. If null defaults to 8.</param>
@@ -67,24 +67,11 @@ public static class LobbyManager
     /// <param name="cheats">Indicates whether cheats are enabled in the lobby.</param>
     /// <param name="mods">Indicates whether mods are enabled in the lobby.</param>
     /// <param name="modIdentifier">The identifier your mod uses when making a lobby</param>
-    public static void SetSettings(string lobbyName, int? maxPlayers, bool publicLobby, bool cracked, bool cheats, bool mods, (string, string) modIdentifier)
-    {
-        LobbyManager.LobbyName = lobbyName;
-        LobbyManager.maxPlayers = maxPlayers;
-        LobbyManager.publicLobby = publicLobby;
-        LobbyManager.cracked = cracked;
-        LobbyManager.cheats = cheats;
-        LobbyManager.mods = mods;
-        LobbyManager.modIdentifier = modIdentifier;
-    }
-    /// <summary>
-    /// Creates a lobby with the set settings
-    /// </summary>
-    public static void CreateLobby()
+    public static void CreateLobby(string lobbyName, int? maxPlayers, bool publicLobby, bool cracked, bool cheats, bool mods, (string, string) modIdentifier)
     {
         Clogger.Log("Creating Lobby");
         
-        SteamManager.instance.HostLobby(LobbyName, maxPlayers, publicLobby, cracked, cheats, mods, modIdentifier);
+        SteamManager.instance.HostLobby(lobbyName, maxPlayers, publicLobby, cracked, cheats, mods, modIdentifier);
     }
 
     /// <summary>

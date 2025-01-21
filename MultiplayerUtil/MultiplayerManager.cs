@@ -386,10 +386,7 @@ public class SteamManager : MonoBehaviour
 
     public void InviteFriend() => SteamFriends.OpenGameInviteOverlay(SteamManager.instance.current_lobby.Value.Id);
 
-    void OnApplicationQuit()
-    {
-        Disconnect();
-    }
+    void OnApplicationQuit() => Disconnect();
     public void Disconnect()
     {
         if (isLobbyOwner)
