@@ -20,7 +20,7 @@ public static class LobbyManager
 
     public static bool isLobbyOwner => SteamManager.instance.isLobbyOwner;
     public static Lobby? current_lobby => SteamManager.instance.current_lobby;
-    public static SteamId selfID =>SteamManager.instance.selfID;
+    public static SteamId selfID => SteamManager.instance.selfID;
 
     public static float importantUpdatesASec
     {

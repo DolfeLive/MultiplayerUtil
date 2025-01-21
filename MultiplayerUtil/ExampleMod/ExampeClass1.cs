@@ -7,6 +7,8 @@ using MU = MultiplayerUtil;
 using Steamworks.Data;
 using UnityEngine;
 using MultiplayerUtil;
+using Clogger = MultiplayerUtil.Logger;
+
 
 namespace ExampleMod;
 
@@ -19,8 +21,8 @@ class ExampleClass1 : BaseUnityPlugin
         this.gameObject.hideFlags = HideFlags.HideAndDontSave;
         instance = this;
         counter = new CounterClass();
-        
-        MU.Callbacks.TimeToSendUnimportantData.AddListener(() => 
+        Clogger.Log("Test");
+        MU.Callbacks.TimeToSendUnimportantData.AddListener(() =>
         {
             if (!MU.LobbyManager.isLobbyOwner) return;
 
