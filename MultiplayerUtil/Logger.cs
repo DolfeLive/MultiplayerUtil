@@ -15,6 +15,24 @@ public static class Logger
     public static void LogWarning(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Warning);
     public static void LogError(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Error);
 
+    public static void StackTraceLog(object msg, int offset = 0)
+    {
+        string callingMethod = "";
+        StackTrace stackTrace = new StackTrace();
+        for (int i = 1 + offset; i < stackTrace.FrameCount; i++)
+        {
+            var method = stackTrace.GetFrame(i)?.GetMethod();
+            if (method != null && method.DeclaringType != null)
+            {
+                callingMethod = method.DeclaringType.Name ?? "Unknown";
+            }
+        }
+
+        string formattedMessage = $"[{Class1.modName}] [{callingMethod}] {msg}";
+
+        Debug.Log(formattedMessage);
+    }
+
     private static void Log(string message, EType etype, ELogType eLogType = ELogType.Normal)
     {
         string callingNamespace = GetCallingNamespace();

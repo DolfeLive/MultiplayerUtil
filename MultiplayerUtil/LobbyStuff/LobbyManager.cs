@@ -20,7 +20,7 @@ public static class LobbyManager
 
     public static bool isLobbyOwner => SteamManager.instance.isLobbyOwner;
     public static Lobby? current_lobby => SteamManager.instance.current_lobby;
-    public static SteamId selfID =>SteamManager.instance.selfID;
+    public static SteamId selfID => SteamManager.instance.selfID;
 
     public static float importantUpdatesASec
     {
@@ -35,15 +35,15 @@ public static class LobbyManager
         }
     }
 
-    public static float unimportantUpdatesASec
+    public static float unimportantUpdatesAMin
     {
         get
         {
-            return SteamManager.instance.unimportantUpdatesASec;
+            return SteamManager.instance.unimportantUpdatesAMin;
         }
         set
         {
-            SteamManager.instance.unimportantUpdatesASec = value;
+            SteamManager.instance.unimportantUpdatesAMin = value;
             restartLoop();
         }
     }
@@ -70,7 +70,6 @@ public static class LobbyManager
     public static void CreateLobby(string lobbyName, int? maxPlayers, bool publicLobby, bool cracked, bool cheats, bool mods, (string, string) modIdentifier)
     {
         Clogger.Log("Creating Lobby");
-        
         SteamManager.instance.HostLobby(lobbyName, maxPlayers, publicLobby, cracked, cheats, mods, modIdentifier);
     }
 

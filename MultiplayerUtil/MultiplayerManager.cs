@@ -20,7 +20,7 @@ public class SteamManager : MonoBehaviour
 
 
     public float importantUpdatesASec = 32;
-    public float unimportantUpdatesASec = 0.2f;
+    public float unimportantUpdatesAMin = 3;
 
     // Runtime
     public Lobby? current_lobby;
@@ -69,7 +69,7 @@ public class SteamManager : MonoBehaviour
             Clogger.Log($"Lobby member joined: {f.Name}");
             if (f.Id != selfID)
             {
-                SteamNetworking.AcceptP2PSessionWithUser(f.Id);
+                EstablishP2P(f);
                 server.besties.Add(f);
 
                 l.SendChatString($":::{f.Id} Joined"); // ::: will be a hidden message marking a user joining for the host and clients to process
@@ -101,12 +101,12 @@ public class SteamManager : MonoBehaviour
             if (isLobbyOwner)
             {
                 server.besties.Remove(Fri);
-                SteamNetworking.CloseP2PSessionWithUser(Fri.Id);
+                Closep2P(Fri);
             }
             else
             {
                 client.connectedPeers.Remove(Fri.Id);
-                SteamNetworking.CloseP2PSessionWithUser(Fri.Id);
+                Closep2P(Fri);
             }
             Clogger.Log($"Lobby member left: {Fri.Name}");
         };
@@ -116,12 +116,12 @@ public class SteamManager : MonoBehaviour
             if (isLobbyOwner)
             {
                 server.besties.Remove(Fri);
-                SteamNetworking.CloseP2PSessionWithUser(Fri.Id);
+                Closep2P(Fri);
             }
             else
             {
                 client.connectedPeers.Remove(Fri.Id);
-                SteamNetworking.CloseP2PSessionWithUser(Fri.Id);
+                Closep2P(Fri);
             }
             Clogger.Log($"Lobby member disconnected: {Fri.Name}");
         };
@@ -131,66 +131,101 @@ public class SteamManager : MonoBehaviour
             if (isLobbyOwner)
             {
                 server.besties.Remove(Fri);
-                SteamNetworking.CloseP2PSessionWithUser(Fri.Id);
+                Closep2P(Fri);
             }
             else
             {
                 client.connectedPeers.Remove(Fri.Id);
-                SteamNetworking.CloseP2PSessionWithUser(Fri.Id);
+                Closep2P(Fri);
             }
             Clogger.Log($"Lobby Member kicked: {Fri.Name}, Kicker: {Kicker.Name}");
         };
     }
-    
+
+    public bool EstablishP2P(dynamic bestie)
+    {
+
+        switch (bestie)
+        {
+            case Friend friend:
+                Clogger.StackTraceLog($"Establishing p2p with: {friend.Name}, {friend.Id}");
+                return SteamNetworking.AcceptP2PSessionWithUser(friend.Id);
+
+            case SteamId steamId:
+                Clogger.StackTraceLog($"Establishing p2p with: {steamId}");
+                return SteamNetworking.AcceptP2PSessionWithUser(steamId);
+
+            default:
+                return false;
+        }
+    }
+
+    public bool Closep2P(dynamic unbestie)
+    {
+        switch (unbestie)
+        {
+            case Friend friend:
+                Clogger.StackTraceLog($"DeEstablishing p2p with: {friend.Name}, {friend.Id}");
+                return SteamNetworking.CloseP2PSessionWithUser(friend.Id);
+
+            case SteamId steamId:
+                Clogger.StackTraceLog($"DeEstablishing p2p with: {steamId}");
+                return SteamNetworking.CloseP2PSessionWithUser(steamId);
+
+            default:
+                return false;
+        }
+    }
+
     public IEnumerator DataLoopInit()
     {
         if (dataLoop != null)
+        {
+            Clogger.StackTraceLog("Dataloop alr running");
             yield break;
-
-        
+        }
 
         Clogger.Log("Data Loop Init Activated");
         float interval = 1f / importantUpdatesASec;
-        float unimportantInterval = 1f / unimportantUpdatesASec;
+        float unimportantInterval = 60f / unimportantUpdatesAMin;
 
         float unimportantTimeElapsed = 0f;
 
         Coroutine checkloop = StartCoroutine(CheckForP2PLoop());
 
-        float startTime = Time.time;
-        while (true)
+        try
         {
-
-            //DataSend();
-            Callbacks.TimeToSendImportantData?.Invoke();
-
-
-            if (isLobbyOwner)
+            while (true)
             {
-                unimportantTimeElapsed += Time.time - startTime;
+                Callbacks.TimeToSendImportantData?.Invoke();
 
-                if (unimportantTimeElapsed >= unimportantInterval)
+                if (isLobbyOwner)
                 {
-                    Callbacks.TimeToSendUnimportantData?.Invoke();
-                    //Clogger.Log($"Lobby members: {current_lobby?.Members.Count()}");
-                    current_lobby?.SetData("members", $"{current_lobby?.Members.Count()}/{maxPlayers}");
-                    unimportantTimeElapsed = 0f;
+                    unimportantTimeElapsed += interval;
+
+                    if (unimportantTimeElapsed >= unimportantInterval)
+                    {
+                        Callbacks.TimeToSendUnimportantData?.Invoke();
+                        current_lobby?.SetData("members", $"{current_lobby?.Members.Count()}/{maxPlayers}");
+                        unimportantTimeElapsed = 0f;
+                    }
                 }
+
+                if (current_lobby == null)
+                {
+                    Clogger.LogWarning("Breaking out of DataLoopInit");
+                    yield break;
+                }
+
+                yield return new WaitForSeconds(interval);
+
             }
-
-            float elapsedTime = Time.time - startTime;
-
-            float waitTime = Mathf.Max(0, interval - elapsedTime);
-                        
-            yield return new WaitForSeconds(waitTime);
-
-            if (current_lobby == null)
-            {
-                Clogger.LogWarning("breaking out of DataLoopInit");
+        }
+        finally
+        {
+            // Ensure any cleanup tasks are performed here
+            if (checkloop != null)
                 StopCoroutine(checkloop);
-
-                yield break;
-            }
         }
     }
 

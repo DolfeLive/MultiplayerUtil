@@ -21,29 +21,29 @@ class ExampleClass1 : BaseUnityPlugin
     {
         instance = this;
         counter = new CounterClass();
-        player = new Player();
+        //player = new Player();
 
-        MU.Callbacks.TimeToSendImportantData.AddListener(() => // use for things like player positions
-        {
-            if (!MU.LobbyManager.isLobbyOwner) return; // Only run if lobby owner
+        //MU.Callbacks.TimeToSendImportantData.AddListener(() => // use for things like player positions
+        //{
+        //    if (!MU.LobbyManager.isLobbyOwner) return; // Only run if lobby owner
             
-            try
-            {
-                var wrapper = new NetworkWrapper
-                {
-                    ClassType = "Player",
-                    ClassData = MU.Data.Serialize(player)
-                };
-                byte[] wrappedData = MU.Data.Serialize(wrapper);
+        //    try
+        //    {
+        //        var wrapper = new NetworkWrapper
+        //        {
+        //            ClassType = "Player",
+        //            ClassData = MU.Data.Serialize(player)
+        //        };
+        //        byte[] wrappedData = MU.Data.Serialize(wrapper);
 
-                Debug.Log($"Sending player pos: {player.position.ToVector3()}");
-                MU.LobbyManager.SendData(wrappedData);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Failed to send data: {e.Message}");
-            }
-        });
+        //        Debug.Log($"Sending player pos: {player.position.ToVector3()}");
+        //        MU.LobbyManager.SendData(wrappedData);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Debug.LogError($"Failed to send data: {e.Message}");
+        //    }
+        //});
 
         MU.Callbacks.TimeToSendUnimportantData.AddListener(() =>  // UnimportantData Runs less than important (you can change the interval), use for things like leaderboards
         {
@@ -51,12 +51,12 @@ class ExampleClass1 : BaseUnityPlugin
 
             try
             {
-                var wrapper = new NetworkWrapper
-                {
-                    ClassType = "Counter",
-                    ClassData = MU.Data.Serialize(counter)
-                };
-                byte[] wrappedData = MU.Data.Serialize(wrapper);
+                //var wrapper = new NetworkWrapper
+                //{
+                //    ClassType = "Counter",
+                //    ClassData = MU.Data.Serialize(counter)
+                //};
+                byte[] wrappedData = MU.Data.Serialize(counter);
 
                 //Debug.Log($"Sending counter value: {counter.counter}");
                 MU.LobbyManager.SendData(wrappedData);
@@ -75,45 +75,45 @@ class ExampleClass1 : BaseUnityPlugin
             }
             var (data, sender) = dual; // (byte[], SteamId?)
 
-            if (data == null || !sender.Value.IsValid)
-            {
-                Debug.LogError($"Received invalid P2P message: data or sender is null. data:{data == null}, Sender:{sender.HasValue}");
-                return;
-            }
-            if (!sender.HasValue || sender.Value == LobbyManager.selfID) // Check if sender isnt null or if the sender isnt yourself
-            {
-                Debug.Log($"Failed at reciving, why: {(sender.HasValue ? "Has value": "Does not have value")} {(data.Length  > 0 ? string.Join("", data) : "")}, Sender: {(sender.HasValue ? sender.Value.ToString() : "null")}");
-                return;
-            }
+            //if (data == null || !sender.Value.IsValid)
+            //{
+            //    Debug.LogError($"Received invalid P2P message: data or sender is null. data:{data == null}, Sender:{sender.HasValue}");
+            //    return;
+            //}
+            //if (!sender.HasValue || sender.Value == LobbyManager.selfID) // Check if sender isnt null or if the sender isnt yourself
+            //{
+            //    Debug.Log($"Failed at reciving, why: {(sender.HasValue ? "Has value": "Does not have value")} {(data.Length  > 0 ? string.Join("", data) : "")}, Sender: {(sender.HasValue ? sender.Value.ToString() : "null")}");
+            //    return;
+            //}
 
             try
             {
                 
-                NetworkWrapper wrapper = MU.Data.Deserialize<NetworkWrapper>(data);
-                if (wrapper == null)
-                {
-                    Debug.LogError("Failed to deserialize NetworkWrapper.");
-                    return;
-                }
+                //NetworkWrapper wrapper = MU.Data.Deserialize<NetworkWrapper>(data);
+                //if (wrapper == null)
+                //{
+                //    Debug.LogError("Failed to deserialize NetworkWrapper.");
+                //    return;
+                //}
 
-                switch (wrapper.ClassType)
-                {
-                    case "Player":
-                        var playerData = MU.Data.Deserialize<Player>(wrapper.ClassData);
-                        Debug.Log($"Received player position: {playerData.position.ToVector3()}");
-                        break;
+                //switch (wrapper.ClassType)
+                //{
+                //    case "Player":
+                //        var playerData = MU.Data.Deserialize<Player>(wrapper.ClassData);
+                //        Debug.Log($"Received player position: {playerData.position.ToVector3()}");
+                //        break;
 
-                    case "Counter":
-                        var counterData = MU.Data.Deserialize<CounterClass>(wrapper.ClassData);
-                        //Debug.Log($"Received counter value: {counterData.counter}");
-                        break;
-                    default:
-                        Debug.LogWarning($"Unknown class type received: {wrapper.ClassType}");
-                        break;
-                }
+                //    case "Counter":
+                //        var counterData = MU.Data.Deserialize<CounterClass>(wrapper.ClassData);
+                //        //Debug.Log($"Received counter value: {counterData.counter}");
+                //        break;
+                //    default:
+                //        Debug.LogWarning($"Unknown class type received: {wrapper.ClassType}");
+                //        break;
+                //}
 
-                //CounterClass receivedCounter = MU.Data.Deserialize<CounterClass>((byte[])data); // Deserialize into the counter class
-                //Debug.Log($"Received counter value: {receivedCounter.counter}");
+                CounterClass receivedCounter = MU.Data.Deserialize<CounterClass>(data); // Deserialize into the counter class
+                Debug.Log($"Received counter value: {receivedCounter.counter}");
                 
                 
             }

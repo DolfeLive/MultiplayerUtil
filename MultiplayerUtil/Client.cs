@@ -11,7 +11,7 @@ public class Client
 
     public void Connect(SteamId hostId)
     {
-        bool success = SteamNetworking.AcceptP2PSessionWithUser(hostId);
+        bool success = SteamManager.instance.EstablishP2P(hostId);
         if (success)
         {
             connectedPeers.Add(hostId);

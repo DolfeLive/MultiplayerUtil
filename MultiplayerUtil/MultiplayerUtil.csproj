@@ -16,8 +16,7 @@
 
   <ItemGroup>
 	 <Publicize Include="Assembly-CSharp" />
-
-
+	  
 	<Reference Include="0Harmony">
       <HintPath>..\..\..\..\Downloads\lib\0Harmony.dll</HintPath>
     </Reference>
