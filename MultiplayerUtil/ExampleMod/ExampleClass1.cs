@@ -29,27 +29,21 @@ class ExampleClass1 : BaseUnityPlugin
         //player = new Player();
 
 
-        /*MU.Callbacks.TimeToSendImportantData.AddListener(() => // use for things like player positions where they need to update often
+        MU.Callbacks.TimeToSendImportantData.AddListener(() => // use for things like player positions where they need to update often
         {
-            if (!MU.LobbyManager.isLobbyOwner) return; // Only run if lobby owner
+            if (!MU.LobbyManager.isLobbyOwner) return; // Only run if lobby owner // only do this if its owner only stuff
 
             try
             {
-                var wrapper = new NetworkWrapper
-                {
-                    ClassType = "Player",
-                    ClassData = MU.Data.Serialize(player)
-                };
-                byte[] wrappedData = MU.Data.Serialize(wrapper);
-
+                
                 Debug.Log($"Sending player pos: {player.position.ToVector3()}");
-                MU.LobbyManager.SendData(wrappedData);
+                MU.LobbyManager.SendData(player);
             }
             catch (Exception e)
             {
                 Debug.LogError($"Failed to send data: {e.Message}");
             }
-        });*/
+        });
 
         MU.Callbacks.TimeToSendUnimportantData.AddListener(() =>  // UnimportantData Runs less than important (x times a seconds), use for things like leaderboards
         {
@@ -72,6 +66,14 @@ class ExampleClass1 : BaseUnityPlugin
             print("counter recived!");
             var counter = Data.Deserialize<ExampleMod.ExampleClass1.CounterClass>(_);
             print($"Value: {counter.counter}");
+        });
+
+        MU.ObserveManager.SubscribeToType(typeof(Player), out UnityEvent<byte[]> PlayerDetected);
+        PlayerDetected.AddListener(_ =>
+        {
+            print("player recived!");
+            var player = Data.Deserialize<Player>(_);
+            print($"player Pos: {player.position.ToVector3()}");
         });
 
         StartCoroutine(Couting());
