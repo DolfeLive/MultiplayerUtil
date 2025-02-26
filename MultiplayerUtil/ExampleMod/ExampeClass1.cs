@@ -194,7 +194,7 @@ class ExampleClass1 : BaseUnityPlugin
     {
         while (true)
         {
-            player.position = new SerializableVector3(NewMovement.instance?.gameObject?.transform.position ?? Vector3.zero);
+            player.position = new SerializableVector3(NewMovement.Instance?.gameObject?.transform.position ?? Vector3.zero);
             yield return new WaitForSeconds(1f);
         }
     }
