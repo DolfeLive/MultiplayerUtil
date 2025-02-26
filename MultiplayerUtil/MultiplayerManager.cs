@@ -19,8 +19,8 @@ public class SteamManager : MonoBehaviour
     public static SteamManager instance;
 
 
-    public const float importantUpdatesASec = 32;
-    public const float unimportantUpdatesAMin = 3;
+    public const float importantUpdatesASec = 30.3f;
+    public const float unimportantUpdatesAMin = 6;
 
     // Runtime
     public Lobby? current_lobby;
@@ -70,13 +70,12 @@ public class SteamManager : MonoBehaviour
         });
     }
 
-    public void ReInnit(bool cracked)
+    public void ReInit(bool cracked)
     {
         if (cracked != this.cracked)
         {
             this.cracked = cracked;
             SteamClient.Init(Class1.appId);
-
         }
     }
 
@@ -300,7 +299,7 @@ public class SteamManager : MonoBehaviour
 
             try
             {
-                ReInnit(Class1.appId == 480u ? true : false);
+                ReInit(Class1.appId == 480u ? true : false);
                 //SteamClient.Init(Class1.appId);
                 Clogger.Log("Reinited steam");
             }
