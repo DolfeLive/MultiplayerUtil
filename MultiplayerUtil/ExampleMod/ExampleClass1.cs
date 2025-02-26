@@ -94,6 +94,7 @@ class ExampleClass1 : BaseUnityPlugin
      *  The ulong type represents unsigned 64-bit integers with values from 0 to 18446744073709551615, inclusive.
      *  
      * - https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/types 8.3.6 Integral types
+     *   https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types
     */
 
 
