@@ -26,12 +26,7 @@ public static class LobbyManager
     {
         get
         {
-            return SteamManager.instance.importantUpdatesASec;
-        }
-        set
-        {
-            SteamManager.instance.importantUpdatesASec = value;
-            restartLoop();
+            return SteamManager.importantUpdatesASec;
         }
     }
 
@@ -39,12 +34,7 @@ public static class LobbyManager
     {
         get
         {
-            return SteamManager.instance.unimportantUpdatesAMin;
-        }
-        set
-        {
-            SteamManager.instance.unimportantUpdatesAMin = value;
-            restartLoop();
+            return SteamManager.unimportantUpdatesAMin;
         }
     }
 

@@ -19,8 +19,8 @@ public class SteamManager : MonoBehaviour
     public static SteamManager instance;
 
 
-    public float importantUpdatesASec = 32;
-    public float unimportantUpdatesAMin = 3;
+    public const float importantUpdatesASec = 32;
+    public const float unimportantUpdatesAMin = 3;
 
     // Runtime
     public Lobby? current_lobby;
@@ -50,6 +50,24 @@ public class SteamManager : MonoBehaviour
         Command.Register();
 
         Callbacks.StartupComplete?.Invoke();
+
+        Callbacks.p2pMessageRecived.AddListener(_ =>
+        {
+            var (data, sender) = _; // (byte[], SteamId?)
+
+            if (data == null || !sender.Value.IsValid)
+            {
+                Debug.LogError($"Received invalid P2P message: data or sender is null. data:{data == null}, Sender:{sender.HasValue}");
+                return;
+            }
+            if (!sender.HasValue || sender.Value == LobbyManager.selfID) // Check if sender isnt null or if the sender isnt yourself
+            {
+                Debug.Log($"Failed at reciving, why: {(sender.HasValue ? "Has value" : "Does not have value")} {(data.Length > 0 ? string.Join("", data) : "")}, Sender: {(sender.HasValue ? sender.Value.ToString() : "null")}");
+                return;
+            }
+
+            ObserveManager.OnMessageRecived(data, sender);
+        });
     }
 
     public void ReInnit(bool cracked)
@@ -240,16 +258,24 @@ public class SteamManager : MonoBehaviour
         }
     }
 
-    public void DataSend(object serialisedData)
+    public void DataSend(object data)
     {
         try
         {
+            NetworkWrapper wrapper = new()
+            {
+                ClassType = data.GetType().AssemblyQualifiedName,
+                ClassData = Data.Serialize(data)
+            };
+
+            byte[] serializedData = Data.Serialize(wrapper);
+
             if (current_lobby != null)
             {
                 if (isLobbyOwner)
-                    server.Send(serialisedData);
+                    server.Send(serializedData);
                 else
-                    client.Send(serialisedData);
+                    client.Send(serializedData);
             }
             else
             {
@@ -484,4 +510,43 @@ public static class Callbacks
     /// Activates when SteamManager is fully set up and ready to use, make code that uses these methods after this fires
     /// </summary>
     public static UnityEvent StartupComplete = new UnityEvent();
+
+    
+}
+
+// Wrapper so i can handle multiple classes
+[System.Serializable]
+public class NetworkWrapper
+{
+    public string ClassType { get; set; }
+    public byte[] ClassData { get; set; }
+}
+
+// this system will allow users to subscribe with their class to notifications of when the specific class they are looking for is detected
+
+public static class ObserveManager
+{
+
+    public static Dictionary<Type, UnityEvent<byte[]>> subscribedEvents = new();
+
+    public static void SubscribeToType(Type classType, out UnityEvent<byte[]> whenDetected)
+    {
+        UnityEvent<byte[]> whenDetectedAction = new();
+
+        subscribedEvents.Add(classType, whenDetectedAction);
+
+        whenDetected = whenDetectedAction;
+    }
+
+    public static void OnMessageRecived(byte[] message, SteamId? sender)
+    {
+        NetworkWrapper recivedData = Data.Deserialize<NetworkWrapper>(message);
+        
+        Type type = Type.GetType(recivedData.ClassType);
+        if (type != null && ObserveManager.subscribedEvents.TryGetValue(type, out UnityEvent<byte[]> notifier))
+        {
+            notifier.Invoke(recivedData.ClassData);
+        }
+    }
+
 }
