@@ -44,19 +44,4 @@ public class Class1 : BaseUnityPlugin
             }
         };
     }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            ExampleMod.ExampleClass1.CounterClass counter = new ExampleMod.ExampleClass1.CounterClass();
-            counter.counter = 5;
-
-            NetworkWrapper nw = new();
-            nw.ClassType = typeof(ExampleMod.ExampleClass1.CounterClass).AssemblyQualifiedName;
-            nw.ClassData = Data.Serialize(counter);
-
-            ObserveManager.OnMessageRecived(Data.Serialize(nw), 0);
-        }
-    }
 }

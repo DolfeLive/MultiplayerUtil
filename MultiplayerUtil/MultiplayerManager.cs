@@ -527,11 +527,12 @@ public class NetworkWrapper
 public static class ObserveManager
 {
 
-    public static Dictionary<Type, UnityEvent<byte[]>> subscribedEvents = new();
+    public static Dictionary<Type, Callbacks.SenderUnityEvent> subscribedEvents = new();
 
-    public static void SubscribeToType(Type classType, out UnityEvent<byte[]> whenDetected)
+    public static void SubscribeToType(Type classType, out Callbacks.
+        SenderUnityEvent whenDetected)
     {
-        UnityEvent<byte[]> whenDetectedAction = new();
+        Callbacks.SenderUnityEvent whenDetectedAction = new();
 
         subscribedEvents.Add(classType, whenDetectedAction);
 
@@ -543,9 +544,9 @@ public static class ObserveManager
         NetworkWrapper recivedData = Data.Deserialize<NetworkWrapper>(message);
         
         Type type = Type.GetType(recivedData.ClassType);
-        if (type != null && ObserveManager.subscribedEvents.TryGetValue(type, out UnityEvent<byte[]> notifier))
+        if (type != null && ObserveManager.subscribedEvents.TryGetValue(type, out Callbacks.SenderUnityEvent notifier))
         {
-            notifier.Invoke(recivedData.ClassData);
+            notifier.Invoke((recivedData.ClassData, sender));
         }
     }
 
