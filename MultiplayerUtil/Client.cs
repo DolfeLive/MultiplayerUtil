@@ -1,8 +1,4 @@
-﻿using Steamworks;
-using System.Collections.Generic;
-using UnityEngine;
-using Clogger = MultiplayerUtil.Logger;
-
+﻿
 namespace MultiplayerUtil.Client;
 
 public class Client

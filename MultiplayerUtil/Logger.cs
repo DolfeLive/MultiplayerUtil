@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using UnityEngine;
-using Debug = UnityEngine.Debug;
-
+﻿
 namespace MultiplayerUtil;
 
 public static class Logger

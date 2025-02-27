@@ -1,9 +1,4 @@
-﻿using Steamworks;
-using System.Collections.Generic;
-using UnityEngine;
-using Clogger = MultiplayerUtil.Logger;
-using System;
-
+﻿
 namespace MultiplayerUtil.Server;
 
 public class Serveier // Read it like its french, also yes i named it this on purpose

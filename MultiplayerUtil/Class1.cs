@@ -1,17 +1,4 @@
-﻿using System;
-using Steamworks;
-using Steamworks.Data;
-using UnityEngine;
-using ULTRAKILL;
-using UnityEngine.UI;
-using BepInEx;
-using UnityEngine.SceneManagement;
-using TMPro;
-using System.IO;
-using HarmonyLib;
-using MultiplayerUtil;
-using Clogger = MultiplayerUtil.Logger;
-
+﻿
 namespace MultiplayerUtil;
 
 [BepInPlugin("DolfeMods.Ultrakill.MultiplayerUtil", "ULTRAKILL MultiplayersUtil", "1.0.0")]

@@ -1,19 +1,4 @@
-﻿using Steamworks.Data;
-using Steamworks;
-using System;
-using UnityEngine;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using MultiplayerUtil;
-using System.IO;
-using System.Collections;
-using Clogger = MultiplayerUtil.Logger;
-using UnityEngine.Events;
-using GameConsole.pcon;
-using Client = MultiplayerUtil.Client;
-using Server = MultiplayerUtil.Server;
-
+﻿
 namespace MultiplayerUtil;
 
 public class SteamManager : MonoBehaviour
@@ -372,7 +357,6 @@ public class SteamManager : MonoBehaviour
         current_lobby?.SetData("mods", mods.ToString());
         current_lobby?.SetData("members", $"1/{maxPlayers}");
         current_lobby?.SetData("Owner", SteamClient.Name);
-
 
         Clogger.Log($"Lobby Created, id: {current_lobby?.Id}");
     }

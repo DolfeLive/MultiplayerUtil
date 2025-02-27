@@ -8,7 +8,6 @@ using MU = MultiplayerUtil;
 using Steamworks.Data;
 using UnityEngine;
 using MultiplayerUtil;
-using Clogger = MultiplayerUtil.Logger;
 using static ExampleMod.ExampleClass1;
 using UnityEngine.Events;
 
