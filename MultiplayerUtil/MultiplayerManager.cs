@@ -170,7 +170,7 @@ public class SteamManager : MonoBehaviour
         switch (bestie)
         {
             case Friend friend:
-                if (friend.Id == selfID)
+                if (friend.Id.Value == selfID.Value)
                 {
                     Clogger.Log("Skippng establishing p2p with self");
                     return true;
@@ -179,7 +179,7 @@ public class SteamManager : MonoBehaviour
                 return SteamNetworking.AcceptP2PSessionWithUser(friend.Id);
 
             case SteamId steamId:
-                if (steamId == selfID)
+                if (steamId.Value == selfID.Value)
                 {
                     Clogger.Log("Skippng establishing p2p with self");
                     return true;

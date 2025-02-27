@@ -9,6 +9,7 @@ public class Serveier // Read it like its french, also yes i named it this on pu
     {
         SteamManager.instance.dataLoop = SteamManager.instance.StartCoroutine(SteamManager.instance.DataLoopInit());
     }
+
     public void Send(object data)
     {
         byte[] serializedData;

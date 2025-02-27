@@ -7,7 +7,14 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 	<FileAlignment>4096</FileAlignment>
   </PropertyGroup>
-
+  
+  <PropertyGroup>
+	<UltrakillPath>
+		C:\Program Files (x86)\Steam\steamapps\common\ULTRAKILL\BepInEx\plugins\
+	</UltrakillPath>
+  </PropertyGroup>
+  
+	
   <ItemGroup>
     <PackageReference Include="Krafs.Publicizer" Version="2.2.1">
       <PrivateAssets>all</PrivateAssets>
@@ -69,8 +76,9 @@
       <HintPath>..\..\..\_UltrakillDeps\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="Build">
-	  <Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFolder="C:\Program Files (x86)\Steam\steamapps\common\ULTRAKILL\BepInEx\plugins\" />
+	  <Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFolder="$(UltrakillPath)" />
   </Target>
 
 </Project>
