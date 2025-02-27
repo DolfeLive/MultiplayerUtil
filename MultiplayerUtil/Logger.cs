@@ -10,13 +10,18 @@ public static class Logger
     public static void LogWarning(string message) => Log(message, EType.None, ELogType.Warning);
     public static void LogError(string message) => Log(message, EType.None, ELogType.Error);
 
-
     public static void Log(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server);
     public static void LogWarning(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Warning);
     public static void LogError(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Error);
 
+    /// <summary>
+    /// A Log that also shows how we got to this error
+    /// </summary>
+    /// <param name="msg">the error to log</param>
+    /// <param name="offset">the offset for getting thr stacktrace</param>
     public static void StackTraceLog(object msg, int offset = 0)
     {
+#if DEBUG
         string callingMethod = "";
         StackTrace stackTrace = new StackTrace();
         for (int i = 1 + offset; i < stackTrace.FrameCount; i++)
@@ -31,6 +36,9 @@ public static class Logger
         string formattedMessage = $"[{Class1.modName}] [{callingMethod}] {msg}";
 
         Debug.Log(formattedMessage);
+#elif RELEASE
+        LogError(msg.ToString());
+#endif
     }
 
     private static void Log(string message, EType etype, ELogType eLogType = ELogType.Normal)

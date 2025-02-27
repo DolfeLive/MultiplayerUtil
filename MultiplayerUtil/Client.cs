@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Clogger = MultiplayerUtil.Logger;
 
-namespace MultiplayerUtil;
+namespace MultiplayerUtil.Client;
 
 public class Client
 {
@@ -40,6 +40,8 @@ public class Client
 
         foreach (var peerId in connectedPeers)
         {
+            if (peerId == LobbyManager.selfID) return;
+
             bool success = SteamNetworking.SendP2PPacket(
                 peerId,
                 serializedData,

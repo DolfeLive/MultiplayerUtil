@@ -4,7 +4,7 @@ using UnityEngine;
 using Clogger = MultiplayerUtil.Logger;
 using System;
 
-namespace MultiplayerUtil;
+namespace MultiplayerUtil.Server;
 
 public class Serveier // Read it like its french, also yes i named it this on purpose
 {
@@ -31,6 +31,9 @@ public class Serveier // Read it like its french, also yes i named it this on pu
         foreach (var bestie in besties)
         {
             var peerId = bestie.Id;
+
+            if (peerId == LobbyManager.selfID) return;
+
             bool success = SteamNetworking.SendP2PPacket(
                 peerId,
                 serializedData,

@@ -11,146 +11,78 @@ using Clogger = MultiplayerUtil.Logger;
 
 namespace MultiplayerUtil;
 
-//[Serializable]
-//public class DataPacket
-//{
-//    // Player Core stuff
-//    public byte PlayerHealth;
+/*
+// An example of a data packet that i made for pvp multiplayer
 
-//    // Pos and Movement
-//    public float PositionX;
-//    public float PositionY;
-//    public float PositionZ;
-//    public float VelocityX;
-//    public float VelocityY;
-//    public float VelocityZ;
-//    public short RotationX;
-//    public short RotationY;
+[Serializable]
+public class DataPacket
+{
+    // Player Core stuff
+    public byte PlayerHealth;
 
-//    // Combat State
-//    public byte CurrentWeapon;
-//    public byte CurrentVariation;
-//    public bool IsSliding;
-//    public bool IsPunching;
+    // Pos and Movement
+    public float PositionX;
+    public float PositionY;
+    public float PositionZ;
+    public float VelocityX;
+    public float VelocityY;
+    public float VelocityZ;
+    public short RotationX;
+    public short RotationY;
 
-//    // Movement State
-//    public bool IsWallJumping;
-//    public bool IsSlamStorage;
+    // Combat State
+    public byte CurrentWeapon;
+    public byte CurrentVariation;
+    public bool IsSliding;
+    public bool IsPunching;
 
-//    public DataPacket(
-//        int Health,
-//        Vector3 Position,
-//        Vector3 Velocity,
-//        Vector3 Rotation,
-//        int CurrentWeapon,
-//        int CurrentVariation,
-//        bool IsSliding,
-//        bool IsPunching,
-//        bool IsWallJumping,
-//        bool IsSlamStorage)
-//    {
-//        this.PlayerHealth = (byte)Health;
-//        this.PositionX = Position.x;
-//        this.PositionY = Position.y;
-//        this.PositionZ = Position.z;
-//        this.VelocityX = Velocity.x;
-//        this.VelocityY = Velocity.y;
-//        this.VelocityZ = Velocity.z;
-//        this.RotationX = (short)Rotation.x;
-//        this.RotationY = (short)Rotation.y;
-//        this.CurrentWeapon = (byte)CurrentWeapon;
-//        this.CurrentVariation = (byte)CurrentVariation;
-//        this.IsSliding = IsSliding;
-//        this.IsPunching = IsPunching;
-//        this.IsWallJumping = IsWallJumping;
-//        this.IsSlamStorage = IsSlamStorage;
-//    }
+    // Movement State
+    public bool IsWallJumping;
+    public bool IsSlamStorage;
 
-//    public byte[] Serialize()
-//    {
-//        using (MemoryStream memoryStream = new MemoryStream())
-//        using (BinaryWriter writer = new BinaryWriter(memoryStream))
-//        {
-//            // core stats
-//            writer.Write(PlayerHealth);
+    public DataPacket(
+        int Health,
+        Vector3 Position,
+        Vector3 Velocity,
+        Vector3 Rotation,
+        int CurrentWeapon,
+        int CurrentVariation,
+        bool IsSliding,
+        bool IsPunching,
+        bool IsWallJumping,
+        bool IsSlamStorage)
+    {
+        this.PlayerHealth = (byte)Health;
+        this.PositionX = Position.x;
+        this.PositionY = Position.y;
+        this.PositionZ = Position.z;
+        this.VelocityX = Velocity.x;
+        this.VelocityY = Velocity.y;
+        this.VelocityZ = Velocity.z;
+        this.RotationX = (short)Rotation.x;
+        this.RotationY = (short)Rotation.y;
+        this.CurrentWeapon = (byte)CurrentWeapon;
+        this.CurrentVariation = (byte)CurrentVariation;
+        this.IsSliding = IsSliding;
+        this.IsPunching = IsPunching;
+        this.IsWallJumping = IsWallJumping;
+        this.IsSlamStorage = IsSlamStorage;
+    }
 
-//            // position and velocity
-//            writer.Write(PositionX);
-//            writer.Write(PositionY);
-//            writer.Write(PositionZ);
+    public void Display()
+    {
+        Console.WriteLine($"Health: {PlayerHealth}");
+        Console.WriteLine($"Position: ({PositionX:F2}, {PositionY:F2}, {PositionZ:F2})");
+        Console.WriteLine($"Velocity: ({VelocityX:F2}, {VelocityY:F2}, {VelocityZ:F2})");
+        Console.WriteLine($"Rotation: ({RotationX:F2}, {RotationY:F2}");
+        Console.WriteLine($"Weapon: {CurrentWeapon} | Variation: {CurrentVariation}");
+        Console.WriteLine($"States: Sliding={IsSliding}, WallJump={IsWallJumping}, IsSlamStorage;={IsSlamStorage}");
+    }
+}
 
-//            writer.Write(VelocityX);
-//            writer.Write(VelocityY);
-//            writer.Write(VelocityZ);
+*/
 
-//            writer.Write(RotationX);
-//            writer.Write(RotationY);
-//            // combat state
-//            writer.Write(CurrentWeapon);
-//            writer.Write(CurrentVariation);
-//            writer.Write(IsSliding);
-//            writer.Write(IsPunching);
 
-//            // movement state
-//            writer.Write(IsWallJumping);
-//            writer.Write(IsSlamStorage);
-
-//            return memoryStream.ToArray();
-//        }
-//    }
-
-//    public static DataPacket? Deserialize(byte[] data)
-//    {
-//        try
-//        {
-//            using (MemoryStream memoryStream = new MemoryStream(data))
-//            using (BinaryReader reader = new BinaryReader(memoryStream))
-//            {
-//                DataPacket packet = new DataPacket(
-//                    reader.ReadByte(),  // PlayerHealth
-
-//                    new Vector3(reader.ReadSingle(), // PositionX
-//                    reader.ReadSingle(), // PositionY
-//                    reader.ReadSingle()), // PositionZ
-
-//                    new Vector3(reader.ReadSingle(), // VelocityX
-//                    reader.ReadSingle(), // VelocityY
-//                    reader.ReadSingle()), // VelocityZ
-
-//                    new Vector3(reader.ReadInt16(),  // PlayerRotX
-//                    reader.ReadInt16(),  // PlayerRotY
-//                    0),  // PlayerRotZ
-
-//                    reader.ReadByte(),   // CurrentWeapon
-//                    reader.ReadByte(),   // CurrentVariation
-
-//                    reader.ReadBoolean(), // IsSliding
-//                    reader.ReadBoolean(), // IsPunching;
-
-//                    reader.ReadBoolean(), // IsWallJumping;
-//                    reader.ReadBoolean() // IsSlamStorage;
-//                );
-//                return packet;
-//            }
-//        }
-//        catch (Exception e)
-//        {
-//
-//            ($"Datapacket deserialize error: {e}");
-//            return null;
-//        }
-//    }
-
-//    public void Display()
-//    {
-//        Console.WriteLine($"Health: {PlayerHealth}");
-//        Console.WriteLine($"Position: ({PositionX:F2}, {PositionY:F2}, {PositionZ:F2})");
-//        Console.WriteLine($"Velocity: ({VelocityX:F2}, {VelocityY:F2}, {VelocityZ:F2})");
-//        Console.WriteLine($"Rotation: ({RotationX:F2}, {RotationY:F2}");
-//        Console.WriteLine($"Weapon: {CurrentWeapon} | Variation: {CurrentVariation}");
-//        Console.WriteLine($"States: Sliding={IsSliding}, WallJump={IsWallJumping}, IsSlamStorage;={IsSlamStorage}");
-//    }
-//}
 public static class Data
 {
     public static T Deserialize<T>(byte[] serializedData)

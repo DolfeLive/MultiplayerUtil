@@ -11,6 +11,8 @@ using System.Collections;
 using Clogger = MultiplayerUtil.Logger;
 using UnityEngine.Events;
 using GameConsole.pcon;
+using Client = MultiplayerUtil.Client;
+using Server = MultiplayerUtil.Server;
 
 namespace MultiplayerUtil;
 
@@ -35,8 +37,8 @@ public class SteamManager : MonoBehaviour
     bool cracked;
     public Coroutine? dataLoop;
 
-    private Serveier server;
-    private Client client;
+    private Server.Serveier server;
+    private Client.Client client;
 
     // End
 
@@ -57,7 +59,7 @@ public class SteamManager : MonoBehaviour
 
             if (data == null || !sender.Value.IsValid)
             {
-                Debug.LogError($"Received invalid P2P message: data or sender is null. data:{data == null}, Sender:{sender.HasValue}");
+                Debug.LogError($"Received invalid P2P message: data or sender is null. data:{data == null}, Sender:{sender.Value}");
                 return;
             }
             if (!sender.HasValue || sender.Value == LobbyManager.selfID) // Check if sender isnt null or if the sender isnt yourself
@@ -214,6 +216,19 @@ public class SteamManager : MonoBehaviour
         {
             while (true)
             {
+                if (current_lobby == null)
+                {
+
+                    yield return new WaitForSeconds(5f);
+                    if (current_lobby == null)
+                    {
+                        Clogger.LogWarning("Breaking out of DataLoopInit");
+                        yield break;
+                    }
+                    print("everything was fine");
+
+                }
+
                 Callbacks.TimeToSendImportantData?.Invoke();
 
                 if (isLobbyOwner)
@@ -228,19 +243,12 @@ public class SteamManager : MonoBehaviour
                     }
                 }
 
-                if (current_lobby == null)
-                {
-                    Clogger.LogWarning("Breaking out of DataLoopInit");
-                    yield break;
-                }
-
                 yield return new WaitForSeconds(interval);
 
             }
         }
         finally
         {
-            // Ensure any cleanup tasks are performed here
             if (checkloop != null)
                 StopCoroutine(checkloop);
         }
@@ -251,7 +259,8 @@ public class SteamManager : MonoBehaviour
         while (true)
         {
             (byte[], SteamId?) data = CheckForP2PMessages();
-            Callbacks.p2pMessageRecived?.Invoke(data);
+            if (data != (null, null))
+                Callbacks.p2pMessageRecived?.Invoke(data);
 
             yield return null;
         }
@@ -300,7 +309,6 @@ public class SteamManager : MonoBehaviour
             try
             {
                 ReInit(Class1.appId == 480u ? true : false);
-                //SteamClient.Init(Class1.appId);
                 Clogger.Log("Reinited steam");
             }
             catch (Exception e) { Clogger.LogError($"STEAM ERROR: {e}"); Clogger.LogWarning("Try launching steam if it isnt launched!"); }
@@ -314,7 +322,7 @@ public class SteamManager : MonoBehaviour
             {
                 if (server.besties.Count > 0)
                 {
-                    current_lobby.Value.SetData("Owner", server.besties[0].Name);
+                    current_lobby?.SetData("Owner", server.besties[0].Name);
 
                     if (current_lobby.Value is Lobby lobby)
                     {
@@ -325,8 +333,8 @@ public class SteamManager : MonoBehaviour
 
             }
 
-            current_lobby.Value.SendChatString($":::Leaving.{selfID.Value}");
-            current_lobby.Value.Leave();
+            current_lobby?.SendChatString($":::Leaving.{selfID.Value}");
+            current_lobby?.Leave();
             current_lobby = null;
         }
 
@@ -338,7 +346,7 @@ public class SteamManager : MonoBehaviour
             return;
         }
                 
-        server = new Serveier();
+        server = new Server.Serveier();
 
         this.LobbyName = LobbyName;
 
@@ -363,6 +371,8 @@ public class SteamManager : MonoBehaviour
         current_lobby?.SetData("cheats", cheats.ToString());
         current_lobby?.SetData("mods", mods.ToString());
         current_lobby?.SetData("members", $"1/{maxPlayers}");
+        current_lobby?.SetData("Owner", SteamClient.Name);
+
 
         Clogger.Log($"Lobby Created, id: {current_lobby?.Id}");
     }
@@ -384,7 +394,7 @@ public class SteamManager : MonoBehaviour
                 isLobbyOwner = false;
                 current_lobby = lob;
 
-                client = new Client();
+                client = new Client.Client();
             }
             else
             {
@@ -463,9 +473,7 @@ public class SteamManager : MonoBehaviour
                 current_lobby?.IsOwnedBy(server.besties[0].Id);
 
                 Clogger.Log($"Setting Lobby Owner to: {server.besties[0].Name}");
-
             }
-
         }
         else
         {
@@ -476,10 +484,18 @@ public class SteamManager : MonoBehaviour
         }
         current_lobby?.Leave();
     }
+
+   
     public void SendChatMessage(string msg)
     {
         current_lobby?.SendChatString(msg);
     }
+
+    ~SteamManager()
+    {
+        Disconnect();
+    }
+
 }
 
 

@@ -43,7 +43,7 @@ class ExampleClass1 : BaseUnityPlugin
             }
         });
 
-        MU.Callbacks.TimeToSendUnimportantData.AddListener(() =>  // UnimportantData Runs less than important (x times a seconds), use for things like leaderboards
+        MU.Callbacks.TimeToSendUnimportantData.AddListener(() =>  // UnimportantData Runs less than important (x times a seconds), use for things like leaderboards, unimportant is only ran if you are the lobby owner
         {
             if (!MU.LobbyManager.isLobbyOwner) return; // Only run if lobby owner // only do this if its owner only stuff
 
@@ -140,6 +140,8 @@ class ExampleClass1 : BaseUnityPlugin
             return new Vector3(x, y, z);
         }
     }
+
+
     public Player player;
 
 
@@ -162,7 +164,7 @@ class ExampleClass1 : BaseUnityPlugin
                 continue;
             }
             player.position = new SerializableVector3(NewMovement.Instance?.gameObject?.transform.position ?? Vector3.zero);
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(.1f);
         }
     }
 }
