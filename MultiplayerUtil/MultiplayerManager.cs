@@ -1,4 +1,5 @@
 ﻿
+
 namespace MultiplayerUtil;
 
 public class SteamManager : MonoBehaviour
@@ -90,6 +91,7 @@ public class SteamManager : MonoBehaviour
                 foreach (var member in l.Members)
                 {
                     client.connectedPeers.Add(member.Id);
+                    SteamManager.instance.EstablishP2P(member.Id);
                 }
             }
         };
@@ -144,6 +146,22 @@ public class SteamManager : MonoBehaviour
             }
             Clogger.Log($"Lobby Member kicked: {Fri.Name}, Kicker: {Kicker.Name}");
         };
+
+        SteamMatchmaking.OnLobbyMemberBanned += (Lob, Banne, Kicker) =>
+        {
+            if (isLobbyOwner)
+            {
+                server.besties.Remove(Banne);
+                Closep2P(Banne);
+            }
+            else
+            {
+                client.connectedPeers.Remove(Banne.Id);
+                Closep2P(Banne);
+            }
+            Clogger.Log($"Lobby Member Banned: {Banne.Name}, Banner: {Kicker.Name}");
+        };
+
     }
 
     public bool EstablishP2P(dynamic bestie)
@@ -152,10 +170,20 @@ public class SteamManager : MonoBehaviour
         switch (bestie)
         {
             case Friend friend:
+                if (friend.Id == selfID)
+                {
+                    Clogger.Log("Skippng establishing p2p with self");
+                    return true;
+                }
                 Clogger.StackTraceLog($"Establishing p2p with: {friend.Name}, {friend.Id}");
                 return SteamNetworking.AcceptP2PSessionWithUser(friend.Id);
 
             case SteamId steamId:
+                if (steamId == selfID)
+                {
+                    Clogger.Log("Skippng establishing p2p with self");
+                    return true;
+                }
                 Clogger.StackTraceLog($"Establishing p2p with: {steamId}");
                 return SteamNetworking.AcceptP2PSessionWithUser(steamId);
 
