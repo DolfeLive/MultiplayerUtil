@@ -10,8 +10,6 @@ public static class Logger
     public static void Log(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server);
     public static void LogWarning(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Warning);
     public static void LogError(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Error);
-
-    public static void StackTraceLog(object msg, int limit = 0)
     public static void UselessLog(string message)
     {
 #if DEBUG
@@ -31,31 +29,14 @@ public static class Logger
         StackTrace stackTrace = new StackTrace();
         for (int i = 1 + offset; i < stackTrace.FrameCount; i++)
         {
-            var frame = stackTrace.GetFrame(i);
-            var method = frame?.GetMethod();
+            var method = stackTrace.GetFrame(i)?.GetMethod();
             if (method != null && method.DeclaringType != null)
             {
-                var declaringType = method.DeclaringType;
-
-                // Ignore Unity's internal methods related to coroutines and execution contexts
-                if (declaringType.Namespace != null &&
-                    (declaringType.Namespace.StartsWith("UnityEngine") || // Unity Engine's internal namespace
-                     declaringType.Namespace.StartsWith("System.Threading") || // For ExecutionContext
-                     declaringType.FullName.Contains("MoveNextRunner") || // Internal Unity state machine methods
-                     declaringType.FullName.Contains("SetupCoroutine"))) // Internal coroutine setup
-                {
-                    continue;
-                }
-
-                // Add the method name to the stack log
-                stackLog.Add($"{declaringType.Name}.{method.Name}");
+                callingMethod = method.DeclaringType.Name ?? "Unknown";
             }
         }
-        stackLog.Reverse();
-        string stackPath = string.Join(" => ", stackLog);
 
-        string prefix = $"[{stackPath}]";
-        string formattedMessage = $"{prefix} {msg}";
+        string formattedMessage = $"[{Class1.modName}] [{callingMethod}] {msg}";
 
         Debug.Log(formattedMessage);
 #elif RELEASE
