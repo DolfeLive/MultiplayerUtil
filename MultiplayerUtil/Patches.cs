@@ -1,12 +1,4 @@
-﻿using HarmonyLib;
-using plog.Models;
-using Steamworks;
-using System;
-using System.Reflection;
-using System.Linq;
-using UnityEngine;
-using Object = UnityEngine.Object;
-
+﻿
 namespace MultiplayerUtil;
 
 [HarmonyPatch(typeof(SteamController), "Awake")]
@@ -28,11 +20,11 @@ public class SteamControllerAwakePatch
         {
             SteamClient.Init(Class1.appId, true);
             SteamManager.instance.selfID = SteamClient.SteamId;
-            SteamController.Log.Info("Steam initialized!");
+            Debug.Log("Steam initialized!");
         }
         catch (Exception)
         {
-            SteamController.Log.Info("Couldn't initialize Steam");
+            Debug.Log("Couldn't initialize Steam");
         }
 
         return false;

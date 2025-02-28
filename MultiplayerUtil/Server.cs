@@ -1,10 +1,5 @@
-﻿using Steamworks;
-using System.Collections.Generic;
-using UnityEngine;
-using Clogger = MultiplayerUtil.Logger;
-using System;
-
-namespace MultiplayerUtil;
+﻿
+namespace MultiplayerUtil.Server;
 
 public class Serveier // Read it like its french, also yes i named it this on purpose
 {
@@ -14,6 +9,7 @@ public class Serveier // Read it like its french, also yes i named it this on pu
     {
         SteamManager.instance.dataLoop = SteamManager.instance.StartCoroutine(SteamManager.instance.DataLoopInit());
     }
+
     public void Send(object data)
     {
         byte[] serializedData;
@@ -27,10 +23,15 @@ public class Serveier // Read it like its french, also yes i named it this on pu
             serializedData = Data.Serialize(data);
         }
 
-
         foreach (var bestie in besties)
         {
             var peerId = bestie.Id;
+
+            if (peerId == LobbyManager.selfID)
+            {
+                Clogger.UselessLog("Skipping sending p2p to self");
+                return;
+            }
             bool success = SteamNetworking.SendP2PPacket(
                 peerId,
                 serializedData,

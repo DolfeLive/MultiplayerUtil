@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using BepInEx;
-using UnityEngine;
-using Clogger = MultiplayerUtil.Logger;
-
+﻿
 namespace MultiplayerUtil;
 
 public static class Semtings

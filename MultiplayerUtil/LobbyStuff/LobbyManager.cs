@@ -1,50 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using Clogger = MultiplayerUtil.Logger;
-using Steamworks;
-using System.Threading.Tasks;
-using Steamworks.Data;
-using System.Linq;
-
+﻿
 namespace MultiplayerUtil;
 
 public static class LobbyManager
 {
-    //static string LobbyName = "New Lobby";
-    //static int? maxPlayers;
-    //static bool publicLobby = false;
-    //static bool cracked = false;
-    //static bool cheats = false;
-    //static bool mods = false;
-    //static (string, string) modIdentifier = ("null", "null");
-
     public static bool isLobbyOwner => SteamManager.instance.isLobbyOwner;
     public static Lobby? current_lobby => SteamManager.instance.current_lobby;
     public static SteamId selfID => SteamManager.instance.selfID;
 
+    /// <summary>
+    /// How many important updates are sent a second, approx 30fps
+    /// </summary>
     public static float importantUpdatesASec
     {
         get
         {
-            return SteamManager.instance.importantUpdatesASec;
-        }
-        set
-        {
-            SteamManager.instance.importantUpdatesASec = value;
-            restartLoop();
+            return SteamManager.importantUpdatesASec;
         }
     }
 
+    /// <summary>
+    /// How many unimportant updates are sent a min, approx 1 every 10 seconds
+    /// </summary>
     public static float unimportantUpdatesAMin
     {
         get
         {
-            return SteamManager.instance.unimportantUpdatesAMin;
-        }
-        set
-        {
-            SteamManager.instance.unimportantUpdatesAMin = value;
-            restartLoop();
+            return SteamManager.unimportantUpdatesAMin;
         }
     }
 
@@ -122,7 +103,7 @@ public static class LobbyManager
     /// <summary>
     /// Send data to connected p2p players
     /// </summary>
-    /// <param name="data">The data object to be sent. MAKE SURE ITS SERIALISED</param>
+    /// <param name="data">The class object to be sent, no need to Serialize, that is done automatically</param>
     public static void SendData(object data)
     {
         SteamManager.instance.DataSend(data);
@@ -144,6 +125,6 @@ public static class LobbyManager
     /// <param name="cracked">if it should innit with appid 480 or ultrakill</param>
     public static void ReInnitSteamClient(bool cracked)
     {
-        SteamManager.instance.ReInnit(cracked);
+        SteamManager.instance.ReInit(cracked);
     }
 }

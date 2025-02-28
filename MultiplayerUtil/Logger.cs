@@ -1,10 +1,4 @@
-﻿using System.Diagnostics;
-using UnityEngine;
-using Debug = UnityEngine.Debug;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
+﻿
 namespace MultiplayerUtil;
 
 public static class Logger
@@ -13,20 +7,29 @@ public static class Logger
     public static void LogWarning(string message) => Log(message, EType.None, ELogType.Warning);
     public static void LogError(string message) => Log(message, EType.None, ELogType.Error);
 
-
     public static void Log(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server);
     public static void LogWarning(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Warning);
     public static void LogError(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Error);
 
     public static void StackTraceLog(object msg, int limit = 0)
+    public static void UselessLog(string message)
     {
-        List<string> stackLog = new List<string>();
-        StackTrace stackTrace = new StackTrace(true);
+#if DEBUG
+        Log(message, EType.None, ELogType.Normal);
+#endif
+    }
 
-        int frameCount = limit > 0 ? Math.Min(limit, stackTrace.FrameCount) : stackTrace.FrameCount;
-
-        // Iterate from the first frame to the limit, capture method names
-        for (int i = 0; i < frameCount; i++)
+    /// <summary>
+    /// A Log that also shows how we got to this error
+    /// </summary>
+    /// <param name="msg">the error to log</param>
+    /// <param name="offset">the offset for getting thr stacktrace</param>
+    public static void StackTraceLog(object msg, int offset = 0)
+    {
+#if DEBUG
+        string callingMethod = "";
+        StackTrace stackTrace = new StackTrace();
+        for (int i = 1 + offset; i < stackTrace.FrameCount; i++)
         {
             var frame = stackTrace.GetFrame(i);
             var method = frame?.GetMethod();
@@ -54,7 +57,10 @@ public static class Logger
         string prefix = $"[{stackPath}]";
         string formattedMessage = $"{prefix} {msg}";
 
-        Debug.Log($"{formattedMessage}");
+        Debug.Log(formattedMessage);
+#elif RELEASE
+        LogError(msg.ToString());
+#endif
     }
 
     private static void Log(string message, EType etype, ELogType eLogType = ELogType.Normal)
