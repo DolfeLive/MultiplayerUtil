@@ -156,6 +156,7 @@ public class SteamManager : MonoBehaviour
                 return SteamNetworking.AcceptP2PSessionWithUser(steamId);
 
             default:
+                Clogger.LogError("Error with establishing p2p");
                 return false;
         }
     }
@@ -173,6 +174,7 @@ public class SteamManager : MonoBehaviour
                 return SteamNetworking.CloseP2PSessionWithUser(steamId);
 
             default:
+                Clogger.LogError("Error with closing p2p");
                 return false;
         }
     }
@@ -181,7 +183,7 @@ public class SteamManager : MonoBehaviour
     {
         if (dataLoop != null)
         {
-            Clogger.StackTraceLog("Dataloop alr running");
+            Clogger.StackTraceLog("Dataloop alr running", 0); 
             yield break;
         }
 
@@ -193,10 +195,13 @@ public class SteamManager : MonoBehaviour
 
         Coroutine checkloop = StartCoroutine(CheckForP2PLoop());
 
+        yield return new WaitForSecondsRealtime(0.1f);
+
         try
         {
             while (true)
             {
+                //Debug.Log("DAtaloopinit ran");
                 Callbacks.TimeToSendImportantData?.Invoke();
 
                 if (isLobbyOwner)
@@ -213,7 +218,7 @@ public class SteamManager : MonoBehaviour
 
                 if (current_lobby == null)
                 {
-                    Clogger.LogWarning("Breaking out of DataLoopInit");
+                    Clogger.StackTraceLog("Breaking out of DataLoopInit", 10);
                     yield break;
                 }
 

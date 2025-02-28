@@ -17,16 +17,19 @@ namespace ExampleMod;
 class ExampleClass1 : BaseUnityPlugin
 {
     public static ExampleClass1 instance;
-    void Start()
+    void Awake()
     {
         instance = this;
         counter = new CounterClass();
+
+        method1();
+        
         //player = new Player();
 
         //MU.Callbacks.TimeToSendImportantData.AddListener(() => // use for things like player positions
         //{
         //    if (!MU.LobbyManager.isLobbyOwner) return; // Only run if lobby owner
-            
+
         //    try
         //    {
         //        var wrapper = new NetworkWrapper
@@ -125,7 +128,7 @@ class ExampleClass1 : BaseUnityPlugin
 
 
         StartCoroutine(Couting());
-        StartCoroutine(UpdatePlayerPos());
+        //StartCoroutine(UpdatePlayerPos());
     }
     bool firstTimeP2p = true;
 
@@ -197,5 +200,25 @@ class ExampleClass1 : BaseUnityPlugin
             player.position = new SerializableVector3(NewMovement.instance?.gameObject?.transform.position ?? Vector3.zero);
             yield return new WaitForSeconds(1f);
         }
+    }
+    void method1()
+    {
+        method2();
+    }
+    void method2()
+    {
+        method3();
+    }
+    void method3()
+    {
+        method4();
+    }
+    void method4()
+    {
+        method5();
+    }
+    void method5()
+    {
+        Clogger.StackTraceLog("hello world", 7);
     }
 }

@@ -28,11 +28,11 @@ public class SteamControllerAwakePatch
         {
             SteamClient.Init(Class1.appId, true);
             SteamManager.instance.selfID = SteamClient.SteamId;
-            SteamController.Log.Info("Steam initialized!", Array.Empty<Tag>());
+            SteamController.Log.Info("Steam initialized!");
         }
         catch (Exception)
         {
-            SteamController.Log.Info("Couldn't initialize Steam", Array.Empty<Tag>());
+            SteamController.Log.Info("Couldn't initialize Steam");
         }
 
         return false;
