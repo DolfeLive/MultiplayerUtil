@@ -36,7 +36,11 @@ public class Client
 
         foreach (var peerId in connectedPeers)
         {
-            if (peerId == LobbyManager.selfID) return;
+            if (peerId == LobbyManager.selfID)
+            {
+                Clogger.UselessLog("Skipping sending p2p to self");
+                return;
+            }
 
             bool success = SteamNetworking.SendP2PPacket(
                 peerId,

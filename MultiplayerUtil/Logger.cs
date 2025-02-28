@@ -11,6 +11,13 @@ public static class Logger
     public static void LogWarning(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Warning);
     public static void LogError(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Error);
 
+    public static void UselessLog(string message)
+    {
+#if DEBUG
+        Log(message, EType.None, ELogType.Normal);
+#endif
+    }
+
     /// <summary>
     /// A Log that also shows how we got to this error
     /// </summary>

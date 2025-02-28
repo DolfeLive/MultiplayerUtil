@@ -30,5 +30,7 @@ public class Class1 : BaseUnityPlugin
                 DontDestroyOnLoad(smObj);
             }
         };
+
+
     }
 }

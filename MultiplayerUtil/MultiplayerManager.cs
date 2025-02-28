@@ -74,8 +74,13 @@ public class SteamManager : MonoBehaviour
             Clogger.Log($"Lobby member joined: {f.Name}");
             if (f.Id != selfID)
             {
-                EstablishP2P(f);
+                bool p2pEstablished = EstablishP2P(f);
                 server.besties.Add(f);
+
+                if (p2pEstablished == false)
+                {
+                    Clogger.LogWarning($"Falied to establish p2p with: {f.Name}");
+                }
 
                 l.SendChatString($":::{f.Id} Joined"); // ::: will be a hidden message marking a user joining for the host and clients to process
 
@@ -250,6 +255,7 @@ public class SteamManager : MonoBehaviour
 
                     if (unimportantTimeElapsed >= unimportantInterval)
                     {
+                        Clogger.UselessLog("TimeToSendUnimportantData invoked");
                         Callbacks.TimeToSendUnimportantData?.Invoke();
                         current_lobby?.SetData("members", $"{current_lobby?.Members.Count()}/{maxPlayers}");
                         unimportantTimeElapsed = 0f;
@@ -386,7 +392,7 @@ public class SteamManager : MonoBehaviour
         current_lobby?.SetData("members", $"1/{maxPlayers}");
         current_lobby?.SetData("Owner", SteamClient.Name);
 
-        Clogger.Log($"Lobby Created, id: {current_lobby?.Id}");
+        Clogger.Log($"Lobby Created, id: {current_lobby?.Id}, {isLobbyOwner}");
     }
 
     // Help collected from jaket github https://github.com/xzxADIxzx/Join-and-kill-em-together/blob/main/src/Jaket/Net/LobbyController.cs
@@ -569,7 +575,9 @@ public static class ObserveManager
     public static void OnMessageRecived(byte[] message, SteamId? sender)
     {
         NetworkWrapper recivedData = Data.Deserialize<NetworkWrapper>(message);
-        
+
+        Clogger.Log($"Recived p2p message, sender: {sender}, type: {recivedData.ClassType}, data: {recivedData.ClassData}");
+
         Type type = Type.GetType(recivedData.ClassType);
         if (type != null && ObserveManager.subscribedEvents.TryGetValue(type, out Callbacks.SenderUnityEvent notifier))
         {

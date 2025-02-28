@@ -23,13 +23,15 @@ public class Serveier // Read it like its french, also yes i named it this on pu
             serializedData = Data.Serialize(data);
         }
 
-
         foreach (var bestie in besties)
         {
             var peerId = bestie.Id;
 
-            if (peerId == LobbyManager.selfID) return;
-
+            if (peerId == LobbyManager.selfID)
+            {
+                Clogger.UselessLog("Skipping sending p2p to self");
+                return;
+            }
             bool success = SteamNetworking.SendP2PPacket(
                 peerId,
                 serializedData,

@@ -138,5 +138,39 @@ public class Commands
         }
     }
 
-}
+    public class P2PSend : GameConsole.ICommand
+    {
+        public string Name => "P2PSend";
 
+        public string Description => "";
+
+        public string Command => "P2PSend";
+
+        public async void Execute(GameConsole.Console con, string[] args)
+        {
+            TestMessage tm = new();
+            tm.msg = string.Join(" ", args);
+            Clogger.Log($"Sending: {string.Join(" ", args)} with p2p");
+            MultiplayerUtil.LobbyManager.SendData(tm);
+        }
+    }
+
+    public class CreateCustomLobby : GameConsole.ICommand
+    {
+        public string Name => "CreateCustomLobby ";
+
+        public string Description => "";
+
+        public string Command => "CCL";
+
+        public async void Execute(GameConsole.Console con, string[] args)
+        {
+            MultiplayerUtil.LobbyManager.CreateLobby(args[0], int.Parse(args[1]), bool.Parse(args[2]), true, false, false, ("Idk", "idk"));
+        }
+    }
+}
+[System.Serializable]
+class TestMessage
+{
+    public string msg = "";
+}

@@ -33,8 +33,8 @@ class ExampleClass1 : BaseUnityPlugin
             try
             {
                 
-                Debug.Log($"Sending player pos: {player.position.ToVector3()}");
-                MU.LobbyManager.SendData(player);
+                //Debug.Log($"Sending player pos: {player.position.ToVector3()}");
+                //MU.LobbyManager.SendData(player);
             }
             catch (Exception e)
             {
@@ -48,6 +48,7 @@ class ExampleClass1 : BaseUnityPlugin
 
             try
             {
+                Debug.Log($"Sending counter value: {counter.counter}");
                 MU.LobbyManager.SendData(counter);
             }
             catch (Exception e)
@@ -72,7 +73,7 @@ class ExampleClass1 : BaseUnityPlugin
         });
 
         StartCoroutine(Couting());
-        StartCoroutine(UpdatePlayerPos());
+        //StartCoroutine(UpdatePlayerPos());
     }
     /*
      *  Please note:
