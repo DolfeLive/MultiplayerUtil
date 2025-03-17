@@ -1,44 +1,39 @@
 ﻿#if DEBUG 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using BepInEx;
 using MU = MultiplayerUtil;
-using Steamworks.Data;
 using UnityEngine;
 using MultiplayerUtil;
-using static ExampleMod.ExampleClass1;
 using UnityEngine.Events;
-
 
 namespace ExampleMod;
 
 [BepInPlugin("DolfeMods.Ultrakill.MultiplayerUtilExampleMod", "ULTRAKILL MultiplayersUtilExampleMod", "1.0.0")]
 class ExampleClass1 : BaseUnityPlugin
 {
-    public static ExampleClass1 instance;
-
+    public static ExampleClass1 instance; // Singleton instance of this class
+    public bool DoPlayerStuff = false; // I keep this false because it gets annoying when testing
     void Start()
     {
-        gameObject.hideFlags = HideFlags.HideAndDontSave;
-        instance = this;
+        gameObject.hideFlags = HideFlags.HideAndDontSave; // An attempt to keep the mod safe when in aggressive scenes
+        instance = this; // Set singleton instance
         counter = new CounterClass();
         player = new Player();
 
+        #region callbacks
         // You can send data at any time but these are pre set loops for convenience
-
         MU.Callbacks.TimeToSendImportantData.AddListener(() => // use for things like player positions where they need to update often
         {
             try
             {
-                
-                //Debug.Log($"Sending player pos: {player.position.ToVector3()}");
-                //MU.LobbyManager.SendData(player);
+                if (DoPlayerStuff)
+                {
+                    Debug.Log($"Sending player pos: {player.position.ToVector3()}");
+                    MU.LobbyManager.SendData(player); // Send the player class
+                }
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to send data: {e.Message}");
+                Debug.LogError($"Failed to send data: {e.Message}"); // If the sending fails dont nuke everything
             }
         });
 
@@ -53,16 +48,17 @@ class ExampleClass1 : BaseUnityPlugin
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to send data: {e.Message}");
+                Debug.LogError($"Failed to send data: {e.Message}"); // If the sending fails dont nuke everything
             }
         });
-        
+        #endregion
 
+        #region TypeSubscribing
         MU.ObserveManager.SubscribeToType(typeof(CounterClass), out Callbacks.SenderUnityEvent CounterDetected);
         CounterDetected.AddListener(_ => // When counter changes run this codeblock
         {
             var counter = Data.Deserialize<ExampleMod.ExampleClass1.CounterClass>(_.Item1);
-            print($"Counter value: {counter.counter}, Sender id: {_.Item2.Value}");
+            print($"Counter value: {counter.counter}, Sender id: {_.Item2.Value}"); // Log detected counter value
         });
 
         MU.ObserveManager.SubscribeToType(typeof(Player), out Callbacks.SenderUnityEvent PlayerDetected);
@@ -71,14 +67,18 @@ class ExampleClass1 : BaseUnityPlugin
             var player = Data.Deserialize<Player>(_.Item1);
             print($"player Pos: {player.position.ToVector3()}, Sender id: {_.Item2.Value}");
         });
+        #endregion
 
+        // Start coroutines for counting and player position updates
         StartCoroutine(Couting());
-        //StartCoroutine(UpdatePlayerPos());
+        if (DoPlayerStuff)
+            StartCoroutine(UpdatePlayerPos());
     }
+
     /*
      *  Please note:
      *  Try and keep your classes small
-     *  Try and substitue values like health from an int to a byte (0-255)
+     *  Try and substitute values like health from an int to a byte (0-255)
      *  If you want to put the extra effort you can split up data based on their importance and send them at different times
      *  Try and avoid strings if you can or set limits to the length of strings
      *  
@@ -97,7 +97,7 @@ class ExampleClass1 : BaseUnityPlugin
      *   https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types
     */
 
-
+    #region counterExample
     // Counter example
     public CounterClass counter;
 
@@ -110,17 +110,27 @@ class ExampleClass1 : BaseUnityPlugin
         }
         public int counter = 0;
     }
+
     IEnumerator Couting()
     {
         while (true)
         {
-            counter.counter++;
-
+            counter.counter++; // Increment counter value every second
             yield return new WaitForSeconds(1f);
         }
     }
-
+    #endregion
+    #region playerExample
     // Player Pos example
+    public Player player;
+
+    [Serializable]
+    public class Player
+    {
+        public Player() { this.position = new SerializableVector3(Vector3.zero); }
+
+        public SerializableVector3 position = new SerializableVector3(Vector3.zero);
+    }
     [System.Serializable]
     public class SerializableVector3 // You normally cant Serialize a vector3 so this is a lil workaround
     {
@@ -140,19 +150,6 @@ class ExampleClass1 : BaseUnityPlugin
             return new Vector3(x, y, z);
         }
     }
-
-
-    public Player player;
-
-
-    [Serializable]
-    public class Player
-    {
-        public Player() { this.position = new SerializableVector3(Vector3.zero); }
-
-        public SerializableVector3 position = new SerializableVector3(Vector3.zero);
-    }
-
     IEnumerator UpdatePlayerPos()
     {
 
@@ -163,9 +160,10 @@ class ExampleClass1 : BaseUnityPlugin
                 yield return new WaitForSeconds(2);
                 continue;
             }
-            player.position = new SerializableVector3(NewMovement.Instance?.gameObject?.transform.position ?? Vector3.zero);
+            player.position = new SerializableVector3(NewMovement.Instance?.gameObject?.transform.position ?? Vector3.zero); // if the value is null ?? will make it return Vector3.zero instead of an error
             yield return new WaitForSeconds(.1f);
         }
     }
+    #endregion
 }
 #endif
