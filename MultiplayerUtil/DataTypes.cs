@@ -98,6 +98,30 @@ public static class Data
         }
     }
 
+    public static bool TryDeserialize<T>(byte[] serializedData, out T result)
+    {
+        if (serializedData == null || serializedData.Length == 0)
+        {
+            Clogger.LogError("Failed to deserialize data: Empty or null data received");
+            throw new ArgumentException("Serialized data cannot be null or empty.", nameof(serializedData));
+        }
+
+        try
+        {
+            using (MemoryStream ms = new MemoryStream(serializedData))
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                result = (T)formatter.Deserialize(ms);
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+        result = default(T);
+        return false;
+    }
+
     public static byte[] Serialize(object data)
     {
         if (data == null)

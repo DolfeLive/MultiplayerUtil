@@ -350,11 +350,13 @@ public class SteamManager : MonoBehaviour
             if (data != (null, null))
             {
                 Clogger.Log("P2P Message recived");
-                if (Data.Deserialize<string>(data.Item1) == "Hello!§")
+                
+                if (Data.TryDeserialize<string>(data.Item1, out string result) && result == "Hello!§")
                 {
                     Clogger.Log("The p2p message was just a init for a p2p");
                     return;
                 }
+                
                 Callbacks.p2pMessageRecived.Invoke(data);
             }
         }
