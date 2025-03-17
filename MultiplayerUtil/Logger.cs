@@ -1,4 +1,4 @@
-﻿
+﻿ 
 namespace MultiplayerUtil;
 
 public static class Logger

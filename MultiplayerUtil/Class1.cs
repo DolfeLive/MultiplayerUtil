@@ -1,4 +1,4 @@
-﻿
+﻿ 
 namespace MultiplayerUtil;
 
 [BepInPlugin("DolfeMods.Ultrakill.MultiplayerUtil", "ULTRAKILL MultiplayersUtil", "1.0.0")]
