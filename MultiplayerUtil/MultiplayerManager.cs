@@ -23,17 +23,19 @@ public class SteamManager : MonoBehaviour
     bool cracked;
     public Coroutine? dataLoop;
 
-    private Server.Serveier server;
+    public Server.Serveier server;
     private Client.Client client;
+    private bool CheckForP2P = false;
 
     // End
+
+    public static bool SelfP2PSafeguards = false;
 
     void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
         //this.gameObject.hideFlags = HideFlags.HideAndDontSave;
         instance = this;
-        SetupCallbacks();
 
         Command.Register();
 
@@ -48,14 +50,20 @@ public class SteamManager : MonoBehaviour
                 Debug.LogError($"Received invalid P2P message: data or sender is null. data:{data == null}, Sender:{sender.Value}");
                 return;
             }
-            if (!sender.HasValue || sender.Value == LobbyManager.selfID) // Check if sender isnt null or if the sender isnt yourself
-            {
-                Debug.Log($"Failed at reciving, why: {(sender.HasValue ? "Has value" : "Does not have value")} {(data.Length > 0 ? string.Join("", data) : "")}, Sender: {(sender.HasValue ? sender.Value.ToString() : "null")}");
-                return;
-            }
+            if (SelfP2PSafeguards)
+                if (!sender.HasValue || sender.Value == LobbyManager.selfID) // Check if sender isnt null or if the sender is yourself
+                {
+                    Debug.Log($"Failed at reciving, why: {(sender.HasValue ? "Has value" : "Does not have value")} {(data.Length > 0 ? string.Join("", data) : "")}, Sender: {(sender.HasValue ? sender.Value.ToString() : "null")}");
+                    return;
+                }
 
             ObserveManager.OnMessageRecived(data, sender);
         });
+
+        Debug.unityLogger.filterLogType = LogType.Log | LogType.Warning | LogType.Error | LogType.Exception | LogType.Assert;
+        this.selfID = SteamClient.SteamId;
+        
+        SetupCallbacks();
     }
 
     public void ReInit(bool cracked)
@@ -64,11 +72,34 @@ public class SteamManager : MonoBehaviour
         {
             this.cracked = cracked;
             SteamClient.Init(Class1.appId);
+            this.selfID = SteamClient.SteamId;
         }
     }
 
     void SetupCallbacks()
     {
+
+        Steamworks.Dispatch.OnDebugCallback = (type, str, server) =>
+        {
+            Clogger.Log($"[Callback {type} {(server ? "server" : "client")}] {str}");
+        };
+        Steamworks.Dispatch.OnException = (e) =>
+        {
+            Clogger.LogError($"Exception: {e.Message}, {e.StackTrace}");
+        };
+
+        //Steamworks.SteamUtils.OnSteamShutdown
+
+        SteamNetworking.OnP2PSessionRequest += (id) =>
+        {
+            Clogger.Log($"P2P requested from: {id}");
+        };
+
+        SteamNetworking.OnP2PConnectionFailed += (id, sessionError) =>
+        {
+            Clogger.Log($"P2P Connection failed, id: {id}, error: {sessionError}");
+        };
+
         SteamMatchmaking.OnLobbyMemberJoined += (l, f) =>
         {
             Clogger.Log($"Lobby member joined: {f.Name}");
@@ -168,10 +199,10 @@ public class SteamManager : MonoBehaviour
         };
 
     }
-
     public bool EstablishP2P(dynamic bestie)
     {
-
+        string HelloP2P = "Hello!§";
+        bool Result = false;
         switch (bestie)
         {
             case Friend friend:
@@ -181,19 +212,25 @@ public class SteamManager : MonoBehaviour
                     return true;
                 }
                 Clogger.StackTraceLog($"Establishing p2p with: {friend.Name}, {friend.Id}");
-                return SteamNetworking.AcceptP2PSessionWithUser(friend.Id);
-
+                Result = SteamNetworking.SendP2PPacket(friend.Id, Data.Serialize(HelloP2P));
+                //Result = SteamNetworking.AcceptP2PSessionWithUser(friend.Id);
+                return Result;
+                break;
             case SteamId steamId:
-                if (steamId.Value == selfID.Value)
-                {
-                    Clogger.Log("Skippng establishing p2p with self");
-                    return true;
-                }
+                if (SelfP2PSafeguards)
+                    if (steamId.Value == selfID.Value)
+                    {
+                        Clogger.Log("Skippng establishing p2p with self");
+                        return true;
+                    }
                 Clogger.StackTraceLog($"Establishing p2p with: {steamId}");
-                return SteamNetworking.AcceptP2PSessionWithUser(steamId);
-
+                Result = SteamNetworking.SendP2PPacket(steamId, Data.Serialize(HelloP2P));
+                //Result = SteamNetworking.AcceptP2PSessionWithUser(steamId);
+                return Result;
+                break;
             default:
                 return false;
+                break;
         }
     }
 
@@ -227,8 +264,8 @@ public class SteamManager : MonoBehaviour
         float unimportantInterval = 60f / unimportantUpdatesAMin;
 
         float unimportantTimeElapsed = 0f;
-
-        Coroutine checkloop = StartCoroutine(CheckForP2PLoop());
+        
+        CheckForP2P = true;
 
         try
         {
@@ -268,23 +305,11 @@ public class SteamManager : MonoBehaviour
         }
         finally
         {
-            if (checkloop != null)
-                StopCoroutine(checkloop);
+            CheckForP2P = false;
+            Clogger.Log("DataLoopInit ending");
         }
     }
-
-    private IEnumerator CheckForP2PLoop()
-    {
-        while (true)
-        {
-            (byte[], SteamId?) data = CheckForP2PMessages();
-            if (data != (null, null))
-                Callbacks.p2pMessageRecived?.Invoke(data);
-
-            yield return null;
-        }
-    }
-
+        
     public void DataSend(object data)
     {
         try
@@ -318,6 +343,21 @@ public class SteamManager : MonoBehaviour
     void Update()
     {
         SteamClient.RunCallbacks();
+
+        if (CheckForP2P)
+        {
+            (byte[], SteamId?) data = CheckForP2PMessages();
+            if (data != (null, null))
+            {
+                Clogger.Log("P2P Message recived");
+                if (Data.Deserialize<string>(data.Item1) == "Hello!§")
+                {
+                    Clogger.Log("The p2p message was just a init for a p2p");
+                    return;
+                }
+                Callbacks.p2pMessageRecived.Invoke(data);
+            }
+        }
     }
     public async void HostLobby(string LobbyName, int? maxPlayers, bool publicLobby, bool cracked, bool cheats, bool mods, (string, string) ModLobbyIDentifiers)
     {
@@ -449,11 +489,12 @@ public class SteamManager : MonoBehaviour
                         continue;
                     }
                     Clogger.Log($"New p2p: {Sender}");
-                    if (Sender == selfID)
-                    {
-                        Clogger.Log("P2p comes from self, skipping");
-                        continue;
-                    }
+                    if (SelfP2PSafeguards)
+                        if (Sender == selfID)
+                        {
+                            Clogger.Log("P2p comes from self, skipping");
+                            continue;
+                        }
 
                     return (buffer, Sender);
                 }
@@ -487,9 +528,9 @@ public class SteamManager : MonoBehaviour
                 }
 
                 current_lobby?.SendChatString($"||| Setting Lobby Owner To: {server.besties[0].Name}");
+                current_lobby?.SetData("members", server.besties.Count.ToString());
                 current_lobby?.SetData("Owner", server.besties[0].Name);
                 current_lobby?.IsOwnedBy(server.besties[0].Id);
-
                 Clogger.Log($"Setting Lobby Owner to: {server.besties[0].Name}");
             }
         }
@@ -501,6 +542,9 @@ public class SteamManager : MonoBehaviour
             }
         }
         current_lobby?.Leave();
+        current_lobby = null;
+        server = null;
+        client = null;
     }
 
    
@@ -574,7 +618,16 @@ public static class ObserveManager
 
     public static void OnMessageRecived(byte[] message, SteamId? sender)
     {
-        NetworkWrapper recivedData = Data.Deserialize<NetworkWrapper>(message);
+        NetworkWrapper recivedData = null;
+        try
+        {
+            recivedData = Data.Deserialize<NetworkWrapper>(message);
+        }
+        catch (InvalidCastException e)
+        {
+            Logger.LogWarning($"Failed to cast p2p message, sender: {sender}, message len: {message.Length}");
+            return;
+        }
 
         Clogger.Log($"Recived p2p message, sender: {sender}, type: {recivedData.ClassType}, data: {recivedData.ClassData}");
 

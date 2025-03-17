@@ -27,11 +27,13 @@ public class Serveier // Read it like its french, also yes i named it this on pu
         {
             var peerId = bestie.Id;
 
-            if (peerId == LobbyManager.selfID)
-            {
-                Clogger.UselessLog("Skipping sending p2p to self");
-                return;
-            }
+            if (SteamManager.SelfP2PSafeguards)
+                if (peerId == LobbyManager.selfID)
+                {
+                    Clogger.UselessLog("Skipping sending p2p to self");
+                    return;
+                }
+
             bool success = SteamNetworking.SendP2PPacket(
                 peerId,
                 serializedData,

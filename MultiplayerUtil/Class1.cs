@@ -33,4 +33,9 @@ public class Class1 : BaseUnityPlugin
 
 
     }
+
+    void Update()
+    {
+        SteamClient.RunCallbacks();
+    }
 }

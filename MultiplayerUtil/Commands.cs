@@ -168,6 +168,23 @@ public class Commands
             MultiplayerUtil.LobbyManager.CreateLobby(args[0], int.Parse(args[1]), bool.Parse(args[2]), true, false, false, ("Idk", "idk"));
         }
     }
+
+    public class SelfP2P : GameConsole.ICommand
+    {
+        public string Name => "SelfP2P";
+
+        public string Description => "";
+
+        public string Command => "SELFP2P";
+
+        public async void Execute(GameConsole.Console con, string[] args)
+        {
+            Clogger.Log($"Current steam id: {SteamManager.instance.selfID}");
+            MultiplayerUtil.SteamManager.instance.EstablishP2P(SteamManager.instance.selfID);
+            MultiplayerUtil.SteamManager.instance.server.besties.Add(new Friend(SteamManager.instance.selfID));
+        }
+    }
+
 }
 [System.Serializable]
 class TestMessage
