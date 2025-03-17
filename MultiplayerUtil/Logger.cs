@@ -10,7 +10,6 @@ public static class Logger
     public static void Log(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server);
     public static void LogWarning(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Warning);
     public static void LogError(string message, bool Client) => Log(message, Client ? EType.Client : EType.Server, ELogType.Error);
-
     public static void UselessLog(string message)
     {
 #if DEBUG

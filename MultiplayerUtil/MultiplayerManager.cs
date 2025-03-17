@@ -1,5 +1,4 @@
 ﻿
-
 namespace MultiplayerUtil;
 
 public class SteamManager : MonoBehaviour
@@ -229,6 +228,7 @@ public class SteamManager : MonoBehaviour
                 return Result;
                 break;
             default:
+                Clogger.LogError("Error with establishing p2p");
                 return false;
                 break;
         }
@@ -247,6 +247,7 @@ public class SteamManager : MonoBehaviour
                 return SteamNetworking.CloseP2PSessionWithUser(steamId);
 
             default:
+                Clogger.LogError("Error with closing p2p");
                 return false;
         }
     }
@@ -255,7 +256,7 @@ public class SteamManager : MonoBehaviour
     {
         if (dataLoop != null)
         {
-            Clogger.StackTraceLog("Dataloop alr running");
+            Clogger.StackTraceLog("Dataloop alr running", 0); 
             yield break;
         }
 
@@ -266,6 +267,8 @@ public class SteamManager : MonoBehaviour
         float unimportantTimeElapsed = 0f;
         
         CheckForP2P = true;
+
+        yield return new WaitForSecondsRealtime(0.1f);
 
         try
         {
@@ -297,6 +300,12 @@ public class SteamManager : MonoBehaviour
                         current_lobby?.SetData("members", $"{current_lobby?.Members.Count()}/{maxPlayers}");
                         unimportantTimeElapsed = 0f;
                     }
+                }
+
+                if (current_lobby == null)
+                {
+                    Clogger.LogWarning("Breaking out of DataLoopInit");
+                    yield break;
                 }
 
                 yield return new WaitForSeconds(interval);
