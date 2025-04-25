@@ -77,11 +77,12 @@ public class SteamManager : MonoBehaviour
 
     void SetupCallbacks()
     {
-
+#if DEBUG
         Steamworks.Dispatch.OnDebugCallback = (type, str, server) =>
         {
             Clogger.Log($"[Callback {type} {(server ? "server" : "client")}] {str}");
         };
+#endif
         Steamworks.Dispatch.OnException = (e) =>
         {
             Clogger.LogError($"Exception: {e.Message}, {e.StackTrace}");
