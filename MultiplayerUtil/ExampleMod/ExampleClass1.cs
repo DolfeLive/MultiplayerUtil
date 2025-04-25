@@ -71,7 +71,7 @@ class ExampleClass1 : BaseUnityPlugin
 
         #region Miscellaneous
         /*
-        // Changing the app id between 480 and ultrakills id
+        // Changing the app id between 480 and ultrakill's id
         MU.LobbyManager.ReInnitSteamClient(cracked: false);
         
 
@@ -185,27 +185,37 @@ class ExampleClass1 : BaseUnityPlugin
         foreach (Lobby lob in getthingy)
         {
             Clogger.Log("-------------------");
-            // Logs the first lobby's name. member count, id and owner
-            Clogger.Log($"Lobby name: {lob.Data.Where(kvp => kvp.Key == "name" && !string.IsNullOrEmpty(kvp.Value))
-                         .Select(kvp => kvp.Value)
-                         .FirstOrDefault()} ");
+            // Logs lobby's name. member count, id and owner
+            Clogger.Log($"Lobby name: {lob.Data
+                .Where(kvp => kvp.Key == "name" && !string.IsNullOrEmpty(kvp.Value))
+                .Select(kvp => kvp.Value)
+                .FirstOrDefault()} ");
 
-            Clogger.Log($"Members: {lob.Data.Where(kvp => kvp.Key == "members" && !string.IsNullOrEmpty(kvp.Value))
-                         .Select(kvp => kvp.Value)
-                         .FirstOrDefault()} ");
+            Clogger.Log($"Members: {lob.Data
+                .Where(kvp => kvp.Key == "members" && !string.IsNullOrEmpty(kvp.Value))
+                .Select(kvp => kvp.Value)
+                .FirstOrDefault()} ");
 
             Clogger.Log($"Id: {lob.Id}");
-            Clogger.Log($"Owner:{lob.Data.Where(kvp => kvp.Key == "Owner" && !string.IsNullOrEmpty(kvp.Value))
-                        .Select(kvp => kvp.Value)
-                        .FirstOrDefault()}");
+            Clogger.Log($"Owner:{lob.Data
+                .Where(kvp => kvp.Key == "Owner" && !string.IsNullOrEmpty(kvp.Value))
+                .Select(kvp => kvp.Value)
+                .FirstOrDefault()}");
         }
     }
 
     public async void Create()
     {
         // lob name, max players (if invalid or null defaults to 8, if its hosted on steam 480 or ultrakill, if mods are allowed, and the identifier ref Search()
-        MU.LobbyManager.CreateLobby(lobbyName: "New lobby", maxPlayers: 3, publicLobby: true, cracked: true, cheats: false, mods: false, modIdentifier: ("ModIdentifier", "ModIdentifier2"));
-
+        MU.LobbyManager.CreateLobby(
+            lobbyName: "New lobby",
+            maxPlayers: 3,
+            publicLobby: true,
+            cracked: true,
+            cheats: false,
+            mods: false,
+            modIdentifier: ("ModIdentifier", "ModIdentifier2")
+        );
     }
 
     public void JoinLobby(ulong id)
