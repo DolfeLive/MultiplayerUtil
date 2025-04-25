@@ -1,4 +1,5 @@
-﻿ 
+﻿using System.Reflection;
+
 namespace MultiplayerUtil;
 
 public static class Logger
@@ -36,7 +37,7 @@ public static class Logger
             }
         }
 
-        string formattedMessage = $"[{Class1.modName}] [{callingMethod}] {msg}";
+        string formattedMessage = $"[{GetModName()}] [{callingMethod}] {msg}";
 
         Debug.Log(formattedMessage);
 #elif RELEASE
@@ -47,7 +48,7 @@ public static class Logger
     private static void Log(string message, EType etype, ELogType eLogType = ELogType.Normal)
     {
         string callingNamespace = GetCallingNamespace();
-        string formattedMessage = $"[{Class1.modName}] [{callingNamespace}]{(etype != EType.None ? (etype == EType.Client ? " [Client]" : " [Server]") : "")} {message}";
+        string formattedMessage = $"[{GetModName()}] [{callingNamespace}]{(etype != EType.None ? (etype == EType.Client ? " [Client]" : " [Server]") : "")} {message}";
 
         switch (eLogType)
         {
@@ -75,6 +76,13 @@ public static class Logger
             }
         }
         return "UnknownNamespace";
+    }
+
+    private static string GetModName()
+    {
+        Assembly callingAssembly = Assembly.GetCallingAssembly();
+        string modName = callingAssembly.GetName().Name ?? "UnknownMod";
+        return modName;
     }
 
     private enum EType

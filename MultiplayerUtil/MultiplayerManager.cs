@@ -70,7 +70,8 @@ public class SteamManager : MonoBehaviour
         if (cracked != this.cracked)
         {
             this.cracked = cracked;
-            SteamClient.Init(Class1.appId);
+            SteamClient.Shutdown();
+            SteamClient.Init(_MultiplayerUtil.appId);
             this.selfID = SteamClient.SteamId;
         }
     }
@@ -379,7 +380,7 @@ public class SteamManager : MonoBehaviour
 
             try
             {
-                ReInit(Class1.appId == 480u ? true : false);
+                ReInit(_MultiplayerUtil.appId == 480u ? true : false);
                 Clogger.Log("Reinited steam");
             }
             catch (Exception e) { Clogger.LogError($"STEAM ERROR: {e}"); Clogger.LogWarning("Try launching steam if it isnt launched!"); }

@@ -18,7 +18,7 @@ public class SteamControllerAwakePatch
 
         try
         {
-            SteamClient.Init(Class1.appId, true);
+            SteamClient.Init(_MultiplayerUtil.appId, true);
             SteamManager.instance.selfID = SteamClient.SteamId;
             Debug.Log("Steam initialized!");
         }

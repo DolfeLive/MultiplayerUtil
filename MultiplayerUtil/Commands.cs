@@ -1,6 +1,7 @@
 ﻿ 
 namespace MultiplayerUtil;
 
+#if DEBUG
 public class Command
 {
     public static void Register()
@@ -14,6 +15,7 @@ public class Command
         );
     }
 }
+
 public class Commands
 {
     /// <summary>
@@ -191,3 +193,4 @@ class TestMessage
 {
     public string msg = "";
 }
+#endif

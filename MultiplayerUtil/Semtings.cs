@@ -66,7 +66,7 @@ public static class Semtings
                 return;
             }
 
-            Class1.cracked = settings.cracked;
+            _MultiplayerUtil.cracked = settings.cracked;
         }
         catch (Exception ex)
         {

@@ -2,11 +2,11 @@
 namespace MultiplayerUtil;
 
 [BepInPlugin("DolfeMods.Ultrakill.MultiplayerUtil", "ULTRAKILL MultiplayersUtil", "1.0.0")]
-public class Class1 : BaseUnityPlugin
+public class _MultiplayerUtil : BaseUnityPlugin
 {
     public static string modName = "MultiplayerUtil";
 
-    public static Class1 instance;
+    public static _MultiplayerUtil instance;
     public static bool cracked = false;
     public static uint appId => cracked ? 480u : 1229490u;
     private GameObject smObj = null!;

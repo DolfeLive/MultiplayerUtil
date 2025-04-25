@@ -69,6 +69,15 @@ class ExampleClass1 : BaseUnityPlugin
         });
         #endregion
 
+        #region Miscellaneous
+        /*
+        // Changing the app id between 480 and ultrakills id
+        MU.LobbyManager.ReInnitSteamClient(cracked: false);
+        
+
+        */
+        #endregion
+
         // Start coroutines for counting and player position updates
         StartCoroutine(Couting());
         if (DoPlayerStuff)
@@ -163,6 +172,56 @@ class ExampleClass1 : BaseUnityPlugin
             player.position = new SerializableVector3(NewMovement.Instance?.gameObject?.transform.position ?? Vector3.zero); // if the value is null ?? will make it return Vector3.zero instead of an error
             yield return new WaitForSeconds(.1f);
         }
+    }
+    #endregion
+
+    #region Lobbies
+    public async void Search()
+    {
+        Clogger.Log("Retriving all open lobbies");
+        List<Lobby> getthingy = getthingy = await MU.LobbyManager.FetchLobbies(("ModIdentifier", "ModIdentifier2")); // Note mod identifier is what you put in LobbyManager.CreateLobby so you only get lobbies from you own mod
+
+
+        foreach (Lobby lob in getthingy)
+        {
+            Clogger.Log("-------------------");
+            // Logs the first lobby's name. member count, id and owner
+            Clogger.Log($"Lobby name: {lob.Data.Where(kvp => kvp.Key == "name" && !string.IsNullOrEmpty(kvp.Value))
+                         .Select(kvp => kvp.Value)
+                         .FirstOrDefault()} ");
+
+            Clogger.Log($"Members: {lob.Data.Where(kvp => kvp.Key == "members" && !string.IsNullOrEmpty(kvp.Value))
+                         .Select(kvp => kvp.Value)
+                         .FirstOrDefault()} ");
+
+            Clogger.Log($"Id: {lob.Id}");
+            Clogger.Log($"Owner:{lob.Data.Where(kvp => kvp.Key == "Owner" && !string.IsNullOrEmpty(kvp.Value))
+                        .Select(kvp => kvp.Value)
+                        .FirstOrDefault()}");
+        }
+    }
+
+    public async void Create()
+    {
+        // lob name, max players (if invalid or null defaults to 8, if its hosted on steam 480 or ultrakill, if mods are allowed, and the identifier ref Search()
+        MU.LobbyManager.CreateLobby(lobbyName: "New lobby", maxPlayers: 3, publicLobby: true, cracked: true, cheats: false, mods: false, modIdentifier: ("ModIdentifier", "ModIdentifier2"));
+
+    }
+
+    public void JoinLobby(ulong id)
+    {
+        MU.LobbyManager.JoinLobbyWithID(id);
+    }
+
+    public void SendMessage(string message)
+    {
+        MU.LobbyManager.SendMessage(message);
+    }
+
+    public void Disconnect()
+    {
+        MU.LobbyManager.Disconnect();
+
     }
     #endregion
 }
