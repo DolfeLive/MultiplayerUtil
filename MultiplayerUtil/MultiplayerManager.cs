@@ -35,9 +35,9 @@ public class SteamManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
         //this.gameObject.hideFlags = HideFlags.HideAndDontSave;
         instance = this;
-
+#if DEBUG
         Command.Register();
-
+#endif
         Callbacks.StartupComplete?.Invoke();
 
         Callbacks.p2pMessageRecived.AddListener(_ =>
@@ -115,7 +115,7 @@ public class SteamManager : MonoBehaviour
                 }
 
                 l.SendChatString($":::{f.Id} Joined"); // ::: will be a hidden message marking a user joining for the host and clients to process
-
+                Callbacks.OnLobbyMemberJoined.Invoke(l, f);
             }
         };
         SteamMatchmaking.OnLobbyEntered += (l) => {
@@ -135,7 +135,8 @@ public class SteamManager : MonoBehaviour
 
         SteamMatchmaking.OnChatMessage += (lo, fr, st) =>
         {
-            Clogger.Log($"Chat message recived from {fr.Name}: {st}");
+            Clogger.Log($"Chat message received from {fr.Name}: {st}");
+            Callbacks.ChatMessageRecived.Invoke(lo, fr, st);
 
         };
 
@@ -151,6 +152,7 @@ public class SteamManager : MonoBehaviour
                 client.connectedPeers.Remove(Fri.Id);
                 Closep2P(Fri);
             }
+            Callbacks.OnLobbyMemberLeave.Invoke(Lob, Fri);
             Clogger.Log($"Lobby member left: {Fri.Name}");
         };
 
@@ -166,6 +168,7 @@ public class SteamManager : MonoBehaviour
                 client.connectedPeers.Remove(Fri.Id);
                 Closep2P(Fri);
             }
+            Callbacks.OnLobbyMemberLeave.Invoke(Lob, Fri);
             Clogger.Log($"Lobby member disconnected: {Fri.Name}");
         };
 
@@ -181,6 +184,7 @@ public class SteamManager : MonoBehaviour
                 client.connectedPeers.Remove(Fri.Id);
                 Closep2P(Fri);
             }
+            Callbacks.OnLobbyMemberLeave.Invoke(Lob, Fri);
             Clogger.Log($"Lobby Member kicked: {Fri.Name}, Kicker: {Kicker.Name}");
         };
 
@@ -196,6 +200,7 @@ public class SteamManager : MonoBehaviour
                 client.connectedPeers.Remove(Banne.Id);
                 Closep2P(Banne);
             }
+            Callbacks.OnLobbyMemberLeave.Invoke(Lob, Banne);
             Clogger.Log($"Lobby Member Banned: {Banne.Name}, Banner: {Kicker.Name}");
         };
 
@@ -601,7 +606,9 @@ public static class Callbacks
     /// </summary>
     public static UnityEvent StartupComplete = new UnityEvent();
 
-    
+    public static UnityEvent<Lobby, Friend> OnLobbyMemberJoined = new UnityEvent<Lobby, Friend>();
+    public static UnityEvent<Lobby, Friend> OnLobbyMemberLeave = new UnityEvent<Lobby, Friend>();
+    public static UnityEvent<Lobby, Friend, string> ChatMessageRecived = new UnityEvent<Lobby, Friend, string>();
 }
 
 // Wrapper so i can handle multiple classes

@@ -80,5 +80,9 @@
   <Target Name="PostBuild" AfterTargets="Build">
 	  <Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFolder="$(UltrakillPath)" />
   </Target>
+  <Target Name="PostBuild" AfterTargets="Build">
+  	  <Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFolder="C:\Users\dolfelive\source\repos\_UltrakillDeps" />
+  </Target>
 
 </Project>
+ 
