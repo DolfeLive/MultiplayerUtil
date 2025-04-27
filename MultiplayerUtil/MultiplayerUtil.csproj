@@ -25,64 +25,61 @@
 
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\_UltrakillDeps\0Harmony.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\_UltrakillDeps\Assembly-CSharp.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\..\..\_UltrakillDeps\BepInEx.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Steamworks.Win64">
-      <HintPath>..\..\..\_UltrakillDeps\Facepunch.Steamworks.Win64.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\Facepunch.Steamworks.Win64.dll</HintPath>
     </Reference>
     <Reference Include="plog">
-      <HintPath>..\..\..\_UltrakillDeps\plog.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\plog.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Addressables">
-      <HintPath>..\..\..\_UltrakillDeps\Unity.Addressables.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\Unity.Addressables.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ResourceManager">
-      <HintPath>..\..\..\_UltrakillDeps\Unity.ResourceManager.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\Unity.ResourceManager.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\..\..\_UltrakillDeps\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\_UltrakillDeps\UnityEngine.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>..\..\..\_UltrakillDeps\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\_UltrakillDeps\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>..\..\..\_UltrakillDeps\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.JSONSerializeModule">
-      <HintPath>..\..\..\_UltrakillDeps\UnityEngine.JSONSerializeModule.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\UnityEngine.JSONSerializeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>..\..\..\_UltrakillDeps\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\_UltrakillDeps\UnityEngine.UI.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIElementsModule">
-      <HintPath>..\..\..\_UltrakillDeps\UnityEngine.UIElementsModule.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\UnityEngine.UIElementsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <HintPath>..\..\..\_UltrakillDeps\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>C:\UltrakillDeps\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="Build">
-	  <Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFolder="$(UltrakillPath)" />
+	  <Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFiles="$(UltrakillPath)\MultiplayerUtil.dll;C:\UltrakillDeps\MultiplayerUtil.dll" />  
   </Target>
-  <Target Name="PostBuild" AfterTargets="Build">
-  	  <Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFolder="C:\Users\dolfelive\source\repos\_UltrakillDeps" />
-  </Target>
-
+  
 </Project>
  
