@@ -8,6 +8,7 @@ public class SteamManager : MonoBehaviour
 
     public const float importantUpdatesASec = 33.3f;
     public const float unimportantUpdatesAMin = 6;
+    private string p2pEstablishMessage = "IWouldLikeToEstablishP2P!§Ÿ";
 
     // Runtime
     public Lobby? current_lobby;
@@ -148,6 +149,7 @@ public class SteamManager : MonoBehaviour
         SteamMatchmaking.OnChatMessage += (lo, fr, st) =>
         {
             if (BlockedSteamIds.Contains(fr.Id)) return;
+            if (st == p2pEstablishMessage) return;
 
             Clogger.Log($"Chat message received from {fr.Name}: {st}");
             Callbacks.OnChatMessageReceived.Invoke(lo, fr, st);
@@ -220,10 +222,9 @@ public class SteamManager : MonoBehaviour
         };
 
     }
-
     public bool EstablishP2P(dynamic bestie)
     {
-        string HelloP2P = "Hello!§";
+        string HelloP2P = p2pEstablishMessage;
         bool Result = false;
         switch (bestie)
         {
