@@ -1,4 +1,6 @@
-﻿ 
+﻿
+using System.Runtime.CompilerServices;
+
 namespace MultiplayerUtil;
 
 public class SteamManager : MonoBehaviour
@@ -31,8 +33,13 @@ public class SteamManager : MonoBehaviour
     private bool CheckForP2P = false;
 
     // End
-
+#if DEBUG
     public static bool SelfP2PSafeguards = false;
+#else
+    public static bool SelfP2PSafeguards = true;
+#endif
+
+    public const int channelToUse = 0; // This is for testing the max channels
 
     void Awake()
     {
@@ -88,12 +95,12 @@ public class SteamManager : MonoBehaviour
             Clogger.Log($"[Callback {type} {(server ? "server" : "client")}] {str}");
         };
 #endif
-        Steamworks.Dispatch.OnException = (e) =>
+        Dispatch.OnException = (e) =>
         {
             Clogger.LogError($"Exception: {e.Message}, {e.StackTrace}");
         };
 
-        //Steamworks.SteamUtils.OnSteamShutdown
+        SteamUtils.OnSteamShutdown += () => { Callbacks.OnSteamShutdown.Invoke(); };
 
         SteamMatchmaking.OnLobbyCreated += (result, lobby) =>
         {
@@ -126,10 +133,10 @@ public class SteamManager : MonoBehaviour
                     Clogger.LogWarning($"Falied to establish p2p with: {f.Name}");
                 }
 
-                l.SendChatString($":::{f.Id} Joined"); // ::: will be a hidden message marking a user joining for the host and clients to process
                 Callbacks.OnLobbyMemberJoined.Invoke(l, f);
             }
         };
+
         SteamMatchmaking.OnLobbyEntered += (l) => {
             if (!String.IsNullOrEmpty(l.Owner.Name) && l.Owner.Id != selfID)
             {
@@ -220,7 +227,6 @@ public class SteamManager : MonoBehaviour
             Callbacks.OnLobbyMemberBanned.Invoke(Banne);
             Clogger.Log($"Lobby Member Banned: {Banne.Name}, Banner: {Kicker.Name}");
         };
-
     }
     public bool EstablishP2P(dynamic bestie)
     {
@@ -236,7 +242,6 @@ public class SteamManager : MonoBehaviour
                 }
                 Clogger.StackTraceLog($"Establishing p2p with: {friend.Name}, {friend.Id}");
                 Result = SteamNetworking.SendP2PPacket(friend.Id, Data.Serialize(HelloP2P));
-                //Result = SteamNetworking.AcceptP2PSessionWithUser(friend.Id);
                 return Result;
                 break;
             case SteamId steamId:
@@ -248,7 +253,6 @@ public class SteamManager : MonoBehaviour
                     }
                 Clogger.StackTraceLog($"Establishing p2p with: {steamId}");
                 Result = SteamNetworking.SendP2PPacket(steamId, Data.Serialize(HelloP2P));
-                //Result = SteamNetworking.AcceptP2PSessionWithUser(steamId);
                 return Result;
                 break;
             default:
@@ -342,11 +346,12 @@ public class SteamManager : MonoBehaviour
             Clogger.Log("DataLoopInit ending");
         }
     }
-        
-    public void DataSend(object data)
+
+    public void DataSend(object data, SendMethod sendMethod)
     {
         try
         {
+            
             NetworkWrapper wrapper = new()
             {
                 ClassType = data.GetType().AssemblyQualifiedName,
@@ -358,9 +363,9 @@ public class SteamManager : MonoBehaviour
             if (current_lobby != null)
             {
                 if (isLobbyOwner)
-                    server.Send(serializedData);
+                    server.Send(serializedData, sendMethod);
                 else
-                    client.Send(serializedData);
+                    client.Send(serializedData, sendMethod);
             }
             else
             {
@@ -506,15 +511,14 @@ public class SteamManager : MonoBehaviour
     
     public (byte[], SteamId?) CheckForP2PMessages()
     {
-
         try
         {
-            while (SteamNetworking.IsP2PPacketAvailable(out uint availableSize, 0))
+            while (SteamNetworking.IsP2PPacketAvailable(out uint availableSize, channelToUse))
             {
                 SteamId Sender = new SteamId();
 
                 byte[] buffer = new byte[availableSize];
-                bool worked = SteamNetworking.ReadP2PPacket(buffer, ref availableSize, ref Sender, 0);
+                bool worked = SteamNetworking.ReadP2PPacket(buffer, ref availableSize, ref Sender, channelToUse);
 
                 if (worked)
                 {
@@ -660,6 +664,8 @@ public static class Callbacks
     /// Invoked when a lobby is successfully created by the local user.
     /// </summary>
     public static UnityEvent<Lobby> OnLobbyCreated = new UnityEvent<Lobby>();
+
+    public static Action OnSteamShutdown = delegate { };
 }
 
 // Wrapper so i can handle multiple classes

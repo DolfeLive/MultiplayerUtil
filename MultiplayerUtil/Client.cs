@@ -20,7 +20,7 @@ public class Client
         }
     }
 
-    public void Send(object data)
+    public void Send(object data, SendMethod sendMethod)
     {
         byte[] serializedData;
 
@@ -42,13 +42,13 @@ public class Client
                     Clogger.UselessLog("Skipping sending p2p to self");
                     return;
                 }
-
+            P2PSend sendType = Data.ConvertSendMethodToP2PSend(sendMethod);
             bool success = SteamNetworking.SendP2PPacket(
                 peerId,
                 serializedData,
                 serializedData.Length,
-                0,
-                P2PSend.Reliable
+                SteamManager.channelToUse,
+                sendType
             );
 
             if (!success)

@@ -28,12 +28,12 @@ class ExampleClass1 : BaseUnityPlugin
                 if (DoPlayerStuff)
                 {
                     Debug.Log($"Sending player pos: {player.position.ToVector3()}");
-                    MU.LobbyManager.SendData(player); // Send the player class
+                    MU.LobbyManager.SendData(player, SendMethod.UnreliableNoDelay); // Send the player class
                 }
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to send data: {e.Message}"); // If the sending fails dont nuke everything
+                Debug.LogError($"Failed to send data: {e.Message}"); // If the sending fails don't nuke everything
             }
         });
 
@@ -44,11 +44,13 @@ class ExampleClass1 : BaseUnityPlugin
             try
             {
                 Debug.Log($"Sending counter value: {counter.counter}");
-                MU.LobbyManager.SendData(counter);
+                MU.LobbyManager.SendData(counter, SendMethod.Reliable);
+
+                //MU.LobbyManager.SendData(scoreboard, SendMethod.ReliableWithBuffering);
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to send data: {e.Message}"); // If the sending fails dont nuke everything
+                Debug.LogError($"Failed to send data: {e.Message}"); // If the sending fails don't nuke everything
             }
         });
         #endregion
@@ -73,8 +75,6 @@ class ExampleClass1 : BaseUnityPlugin
         /*
         // Changing the app id between 480 and ultrakill's id
         MU.LobbyManager.ReInnitSteamClient(cracked: false);
-        
-
         */
         #endregion
 

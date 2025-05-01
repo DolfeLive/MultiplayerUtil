@@ -106,9 +106,9 @@ public static class LobbyManager
     /// Send data to connected p2p players
     /// </summary>
     /// <param name="data">The class object to be sent, no need to Serialize, that is done automatically</param>
-    public static void SendData(object data)
+    public static void SendData(object data, SendMethod sendMethod = SendMethod.Reliable)
     {
-        SteamManager.instance.DataSend(data);
+        SteamManager.instance.DataSend(data, sendMethod);
     }
 
     /// <summary>

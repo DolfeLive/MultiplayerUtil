@@ -71,8 +71,6 @@ public class DataPacket
 }
 
 */
-
-
 public static class Data
 {
     public static T Deserialize<T>(byte[] serializedData)
@@ -144,5 +142,37 @@ public static class Data
             Clogger.LogError($"Failed to serialize data: {ex.Message}");
             throw;
         }
+    }
+
+    public static P2PSend ConvertSendMethodToP2PSend(MultiplayerUtil.SendMethod method)
+    {
+        P2PSend p2pSend = 0;
+
+        if ((method & MultiplayerUtil.SendMethod.Reliable) == MultiplayerUtil.SendMethod.Reliable)
+            p2pSend |= P2PSend.Reliable;
+        if ((method & MultiplayerUtil.SendMethod.Unreliable) == MultiplayerUtil.SendMethod.Unreliable)
+            p2pSend |= P2PSend.Unreliable;
+        if ((method & MultiplayerUtil.SendMethod.UnreliableNoDelay) == MultiplayerUtil.SendMethod.UnreliableNoDelay)
+            p2pSend |= P2PSend.UnreliableNoDelay;
+        if ((method & MultiplayerUtil.SendMethod.ReliableWithBuffering) == MultiplayerUtil.SendMethod.ReliableWithBuffering)
+            p2pSend |= P2PSend.ReliableWithBuffering;
+
+        return p2pSend;
+    }
+
+    public static MultiplayerUtil.SendMethod ConvertP2PSendToSendMethod(P2PSend p2pSend)
+    {
+        MultiplayerUtil.SendMethod method = 0;
+
+        if ((p2pSend & P2PSend.Reliable) == P2PSend.Reliable)
+            method |= MultiplayerUtil.SendMethod.Reliable;
+        if ((p2pSend & P2PSend.Unreliable) == P2PSend.Unreliable)
+            method |= MultiplayerUtil.SendMethod.Unreliable;
+        if ((p2pSend & P2PSend.UnreliableNoDelay) == P2PSend.UnreliableNoDelay)
+            method |= MultiplayerUtil.SendMethod.UnreliableNoDelay;
+        if ((p2pSend & P2PSend.ReliableWithBuffering) == P2PSend.ReliableWithBuffering)
+            method |= MultiplayerUtil.SendMethod.ReliableWithBuffering;
+
+        return method;
     }
 }
