@@ -13,7 +13,7 @@ public enum SendMethod
 {
     /// <summary>
     /// Fast but no guarantee of delivery or order
-    /// </summary
+    /// </summary>
     Unreliable = 0,
 
     /// <summary>
