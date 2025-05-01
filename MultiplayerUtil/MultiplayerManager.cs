@@ -6,11 +6,14 @@ public class SteamManager : MonoBehaviour
     public static SteamManager instance;
 
 
-    public const float importantUpdatesASec = 30.3f;
+    public const float importantUpdatesASec = 33.3f;
     public const float unimportantUpdatesAMin = 6;
 
     // Runtime
     public Lobby? current_lobby;
+
+    public List<SteamId> BannedSteamIds = new();
+    public List<SteamId> BlockedSteamIds = new();
 
 
     public SteamId selfID;
@@ -75,7 +78,7 @@ public class SteamManager : MonoBehaviour
             this.selfID = SteamClient.SteamId;
         }
     }
-
+    
     void SetupCallbacks()
     {
 #if DEBUG
@@ -91,20 +94,28 @@ public class SteamManager : MonoBehaviour
 
         //Steamworks.SteamUtils.OnSteamShutdown
 
+        SteamMatchmaking.OnLobbyCreated += (result, lobby) =>
+        {
+            Clogger.Log($"Lobby Created, result: {result}, lobby: {lobby.Id}");
+            Callbacks.OnLobbyCreated.Invoke(lobby);
+        };
+        
         SteamNetworking.OnP2PSessionRequest += (id) =>
         {
             Clogger.Log($"P2P requested from: {id}");
+            Callbacks.OnP2PSessionRequest.Invoke(id);
         };
 
         SteamNetworking.OnP2PConnectionFailed += (id, sessionError) =>
         {
             Clogger.Log($"P2P Connection failed, id: {id}, error: {sessionError}");
+            Callbacks.OnP2PConnectionFailed.Invoke(id, sessionError);
         };
 
         SteamMatchmaking.OnLobbyMemberJoined += (l, f) =>
         {
             Clogger.Log($"Lobby member joined: {f.Name}");
-            if (f.Id != selfID)
+            if (f.Id != selfID && !BannedSteamIds.Contains(f.Id))
             {
                 bool p2pEstablished = EstablishP2P(f);
                 server.besties.Add(f);
@@ -123,20 +134,23 @@ public class SteamManager : MonoBehaviour
             {
                 Clogger.Log($"Joined Lobby: {l.Owner.Name}");
                 client.Connect(l.Owner.Id);
-
-
+                
                 foreach (var member in l.Members)
                 {
                     client.connectedPeers.Add(member.Id);
                     SteamManager.instance.EstablishP2P(member.Id);
                 }
+
+                Callbacks.OnLobbyEntered.Invoke(l);
             }
         };
 
         SteamMatchmaking.OnChatMessage += (lo, fr, st) =>
         {
+            if (BlockedSteamIds.Contains(fr.Id)) return;
+
             Clogger.Log($"Chat message received from {fr.Name}: {st}");
-            Callbacks.ChatMessageRecived.Invoke(lo, fr, st);
+            Callbacks.OnChatMessageRecived.Invoke(lo, fr, st);
 
         };
 
@@ -201,10 +215,12 @@ public class SteamManager : MonoBehaviour
                 Closep2P(Banne);
             }
             Callbacks.OnLobbyMemberLeave.Invoke(Lob, Banne);
+            Callbacks.OnLobbyMemberBanned.Invoke(Banne);
             Clogger.Log($"Lobby Member Banned: {Banne.Name}, Banner: {Kicker.Name}");
         };
 
     }
+
     public bool EstablishP2P(dynamic bestie)
     {
         string HelloP2P = "Hello!§";
@@ -606,9 +622,25 @@ public static class Callbacks
     /// </summary>
     public static UnityEvent StartupComplete = new UnityEvent();
 
+    /// <summary>
+    /// Fires when a member joins the lobby (uttil automatically sets up p2p)
+    /// </summary>
     public static UnityEvent<Lobby, Friend> OnLobbyMemberJoined = new UnityEvent<Lobby, Friend>();
+
     public static UnityEvent<Lobby, Friend> OnLobbyMemberLeave = new UnityEvent<Lobby, Friend>();
-    public static UnityEvent<Lobby, Friend, string> ChatMessageRecived = new UnityEvent<Lobby, Friend, string>();
+    
+    public static UnityEvent<Lobby, Friend, string> OnChatMessageRecived = new UnityEvent<Lobby, Friend, string>();
+    
+    public static UnityEvent<SteamId> OnP2PSessionRequest = new UnityEvent<SteamId>();
+    
+    public static UnityEvent<SteamId, P2PSessionError> OnP2PConnectionFailed = new UnityEvent<SteamId, P2PSessionError>();
+    
+    public static UnityEvent<Friend> OnLobbyMemberBanned = new UnityEvent<Friend>();
+    
+    public static UnityEvent<Lobby> OnLobbyEntered = new UnityEvent<Lobby>();
+    
+    public static UnityEvent<Lobby> OnLobbyCreated = new UnityEvent<Lobby>();
+
 }
 
 // Wrapper so i can handle multiple classes

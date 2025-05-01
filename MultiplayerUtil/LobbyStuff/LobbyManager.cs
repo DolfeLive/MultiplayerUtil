@@ -28,8 +28,10 @@ public static class LobbyManager
             return SteamManager.unimportantUpdatesAMin;
         }
     }
-
-    private static void restartLoop()
+    /// <summary>
+    /// Restarts DataLoop if something goes wrong, can cause problems
+    /// </summary>
+    public static void restartLoop()
     { 
         if (SteamManager.instance.dataLoop != null)
         {
@@ -127,4 +129,58 @@ public static class LobbyManager
     {
         SteamManager.instance.ReInit(cracked);
     }
+
+    /// <summary>
+    /// Adds a Steam user to the banned list.
+    /// </summary>
+    /// <param name="steamId">The Steam ID of the user to ban.</param>
+    public static void AddToBannedUsers(SteamId steamId)
+    {
+        SteamManager.instance.BannedSteamIds.Add(steamId);
+    }
+
+    /// <summary>
+    /// Adds a Steam user to the blocked list.
+    /// </summary>
+    /// <param name="steamId">The Steam ID of the user to block.</param>
+    public static void AddToBlockedUsers(SteamId steamId)
+    {
+        SteamManager.instance.BlockedSteamIds.Add(steamId);
+    }
+
+    /// <summary>
+    /// Removes a Steam user from the banned list.
+    /// </summary>
+    /// <param name="steamId">The Steam ID of the user to unban.</param>
+    public static void RemoveFromBannedUsers(SteamId steamId)
+    {
+        SteamManager.instance.BannedSteamIds.Remove(steamId);
+    }
+
+    /// <summary>
+    /// Removes a Steam user from the blocked list.
+    /// </summary>
+    /// <param name="steamId">The Steam ID of the user to unblock.</param>
+    public static void RemoveFromBlockedUsers(SteamId steamId)
+    {
+        SteamManager.instance.BlockedSteamIds.Remove(steamId);
+    }
+
+    /// <summary>
+    /// Clears all users from the banned list.
+    /// </summary>
+    public static void ClearBannedUsers()
+    {
+        SteamManager.instance.BannedSteamIds.Clear();
+    }
+
+    /// <summary>
+    /// Clears all users from the blocked list.
+    /// </summary>
+    public static void ClearBlockedUsers()
+    {
+        SteamManager.instance.BlockedSteamIds.Clear();
+    }
+
+
 }

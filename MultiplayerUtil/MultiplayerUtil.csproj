@@ -9,9 +9,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-	<UltrakillPath>
-		C:\Program Files (x86)\Steam\steamapps\common\ULTRAKILL\BepInEx\plugins\
-	</UltrakillPath>
+	<UltrakillPath>C:\Program Files (x86)\Steam\steamapps\common\ULTRAKILL\BepInEx\plugins\</UltrakillPath>
   </PropertyGroup>
   
 	
@@ -77,9 +75,11 @@
     </Reference>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="Build">
-	  <Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFiles="$(UltrakillPath)\MultiplayerUtil.dll;C:\UltrakillDeps\MultiplayerUtil.dll" />  
-  </Target>
-  
+	<Target Name="PostBuild" AfterTargets="Build">
+		<Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFiles="$(UltrakillPath)\MultiplayerUtil.dll" />
+		<Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFiles="C:\UltrakillDeps\MultiplayerUtil.dll" />
+	</Target>
+
+
 </Project>
  
