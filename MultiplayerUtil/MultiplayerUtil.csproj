@@ -11,7 +11,6 @@
   <PropertyGroup>
 	<UltrakillPath>C:\Program Files (x86)\Steam\steamapps\common\ULTRAKILL\BepInEx\plugins\</UltrakillPath>
   </PropertyGroup>
-  
 	
   <ItemGroup>
     <PackageReference Include="Krafs.Publicizer" Version="2.2.1">
@@ -23,55 +22,55 @@
 
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>C:\UltrakillDeps\0Harmony.dll</HintPath>
+      <HintPath>\UltrakillDeps\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>C:\UltrakillDeps\Assembly-CSharp.dll</HintPath>
+      <HintPath>\UltrakillDeps\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>C:\UltrakillDeps\BepInEx.dll</HintPath>
+      <HintPath>\UltrakillDeps\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Steamworks.Win64">
-      <HintPath>C:\UltrakillDeps\Facepunch.Steamworks.Win64.dll</HintPath>
+      <HintPath>\UltrakillDeps\Facepunch.Steamworks.Win64.dll</HintPath>
     </Reference>
     <Reference Include="plog">
-      <HintPath>C:\UltrakillDeps\plog.dll</HintPath>
+      <HintPath>\UltrakillDeps\plog.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Addressables">
-      <HintPath>C:\UltrakillDeps\Unity.Addressables.dll</HintPath>
+      <HintPath>\UltrakillDeps\Unity.Addressables.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ResourceManager">
-      <HintPath>C:\UltrakillDeps\Unity.ResourceManager.dll</HintPath>
+      <HintPath>\UltrakillDeps\Unity.ResourceManager.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>C:\UltrakillDeps\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>\UltrakillDeps\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>C:\UltrakillDeps\UnityEngine.dll</HintPath>
+      <HintPath>\UltrakillDeps\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>C:\UltrakillDeps\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>\UltrakillDeps\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>C:\UltrakillDeps\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>\UltrakillDeps\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>C:\UltrakillDeps\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>\UltrakillDeps\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.JSONSerializeModule">
-      <HintPath>C:\UltrakillDeps\UnityEngine.JSONSerializeModule.dll</HintPath>
+      <HintPath>\UltrakillDeps\UnityEngine.JSONSerializeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>C:\UltrakillDeps\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>\UltrakillDeps\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>C:\UltrakillDeps\UnityEngine.UI.dll</HintPath>
+      <HintPath>\UltrakillDeps\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIElementsModule">
-      <HintPath>C:\UltrakillDeps\UnityEngine.UIElementsModule.dll</HintPath>
+      <HintPath>\UltrakillDeps\UnityEngine.UIElementsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <HintPath>C:\UltrakillDeps\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>\UltrakillDeps\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 
