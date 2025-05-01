@@ -349,6 +349,8 @@ public class SteamManager : MonoBehaviour
 
     public void DataSend(object data, SendMethod sendMethod)
     {
+        if (current_lobby == null) return;
+
         try
         {
             
@@ -371,6 +373,43 @@ public class SteamManager : MonoBehaviour
             {
                 Clogger.Log("Current Lobby is null");
             }
+        }
+        catch (Exception e)
+        {
+            Clogger.Log($"Data Send Exception: {e}");
+        }
+    }
+
+    public void LobbyOwnerSend(object data, SendMethod sendMethod)
+    {
+        if (current_lobby == null) return;
+
+        try
+        {
+            NetworkWrapper wrapper = new()
+            {
+                ClassType = data.GetType().AssemblyQualifiedName,
+                ClassData = Data.Serialize(data)
+            };
+
+            Friend lobbyOwner = current_lobby.Value.Owner;
+
+            byte[] serializedData = Data.Serialize(wrapper);
+
+            if (SteamManager.SelfP2PSafeguards)
+                if (lobbyOwner.Id == LobbyManager.selfID)
+                {
+                    Clogger.UselessLog("Skipping sending p2p to self");
+                    return;
+                }
+            P2PSend sendType = Data.ConvertSendMethodToP2PSend(sendMethod);
+            bool success = SteamNetworking.SendP2PPacket(
+                lobbyOwner.Id,
+                serializedData,
+                serializedData.Length,
+                SteamManager.channelToUse,
+                sendType
+            );
         }
         catch (Exception e)
         {

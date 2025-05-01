@@ -112,6 +112,14 @@ public static class LobbyManager
     }
 
     /// <summary>
+    /// Sends data to only the lobby owner
+    /// </summary>
+    public static void SendToLobbyOwner(object data, SendMethod sendMethod = SendMethod.Reliable)
+    {
+        SteamManager.instance.LobbyOwnerSend(data, sendMethod);
+    }
+
+    /// <summary>
     /// Opens steam invite friend menu
     /// </summary>
     public static void InviteFriend() => SteamManager.instance.InviteFriend();
