@@ -10,7 +10,7 @@ public class SteamManager : MonoBehaviour
 
     public const float importantUpdatesASec = 33.3f;
     public const float unimportantUpdatesAMin = 6;
-    private string p2pEstablishMessage = "IWouldLikeToEstablishP2P!";
+    public static string p2pEstablishMessage = "IWouldLikeToEstablishP2P!";
 
     // Runtime
     public Lobby? current_lobby;
@@ -230,14 +230,9 @@ public class SteamManager : MonoBehaviour
     }
     public bool EstablishP2P(dynamic bestie)
     {
-        string HelloP2P = p2pEstablishMessage;
-        NetworkWrapper wrapper = new()
-        {
-            ClassType = "P2PIntro",
-            ClassData = Data.Serialize(HelloP2P)
-        };
-
         bool Result = false;
+        byte[] messageBytes = System.Text.Encoding.UTF8.GetBytes(p2pEstablishMessage);
+
         switch (bestie)
         {
             case Friend friend:
@@ -247,7 +242,7 @@ public class SteamManager : MonoBehaviour
                     return true;
                 }
                 Clogger.StackTraceLog($"Establishing p2p with: {friend.Name}, {friend.Id}");
-                Result = SteamNetworking.SendP2PPacket(friend.Id, Data.Serialize(HelloP2P));
+                Result = SteamNetworking.SendP2PPacket(friend.Id, messageBytes);
                 return Result;
                 break;
             case SteamId steamId:
@@ -258,7 +253,7 @@ public class SteamManager : MonoBehaviour
                         return true;
                     }
                 Clogger.StackTraceLog($"Establishing p2p with: {steamId}");
-                Result = SteamNetworking.SendP2PPacket(steamId, Data.Serialize(HelloP2P));
+                Result = SteamNetworking.SendP2PPacket(steamId, messageBytes);
                 return Result;
                 break;
             default:
@@ -739,14 +734,23 @@ public static class ObserveManager
 
     public static void OnMessageRecived(byte[] message, SteamId? sender)
     {
+        try
+        {
+            string msgString = System.Text.Encoding.Default.GetString(message);
+
+            if (msgString == SteamManager.p2pEstablishMessage)
+            {
+                Clogger.Log("Received P2P intro string message!");
+            }
+
+        }
+        catch
+        {        }
+
         NetworkWrapper recivedData = null;
         try
         {
             recivedData = Data.Deserialize<NetworkWrapper>(message);
-            if (recivedData.ClassType == "P2PIntro")
-            {
-                Clogger.Log("P2p intro recived!");
-            }
         }
         catch (InvalidCastException e)
         {
