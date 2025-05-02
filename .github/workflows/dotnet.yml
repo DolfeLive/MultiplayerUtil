@@ -1,0 +1,63 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+ 
+name: .NET
+
+on:
+  push:
+    branches: [ "master" ]
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps: 
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release --no-restore --output publish_output
+    
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    
+    - name: Upload published artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: published-app
+        path: publish_output
+
+    - name: Create Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        draft: false
+        prerelease: false
+    
+    - name: Upload DLL to Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./publish_output/MultiplayerUtil.dll
+        asset_name: MultiplayerUtil.dll
+        asset_content_type: application/octet-stream

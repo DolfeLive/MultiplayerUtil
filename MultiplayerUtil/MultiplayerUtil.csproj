@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
 	<LangVersion>latest</LangVersion>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 	<FileAlignment>4096</FileAlignment>
+    	<PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -22,59 +22,59 @@
 
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>\UltrakillDeps\0Harmony.dll</HintPath>
+      <HintPath>UltrakillDeps\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>\UltrakillDeps\Assembly-CSharp.dll</HintPath>
+      <HintPath>UltrakillDeps\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>\UltrakillDeps\BepInEx.dll</HintPath>
+      <HintPath>UltrakillDeps\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Steamworks.Win64">
-      <HintPath>\UltrakillDeps\Facepunch.Steamworks.Win64.dll</HintPath>
+      <HintPath>UltrakillDeps\Facepunch.Steamworks.Win64.dll</HintPath>
     </Reference>
     <Reference Include="plog">
-      <HintPath>\UltrakillDeps\plog.dll</HintPath>
+      <HintPath>UltrakillDeps\plog.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Addressables">
-      <HintPath>\UltrakillDeps\Unity.Addressables.dll</HintPath>
+      <HintPath>UltrakillDeps\Unity.Addressables.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ResourceManager">
-      <HintPath>\UltrakillDeps\Unity.ResourceManager.dll</HintPath>
+      <HintPath>UltrakillDeps\Unity.ResourceManager.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>\UltrakillDeps\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>UltrakillDeps\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>\UltrakillDeps\UnityEngine.dll</HintPath>
+      <HintPath>UltrakillDeps\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>\UltrakillDeps\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>UltrakillDeps\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>\UltrakillDeps\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>UltrakillDeps\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>\UltrakillDeps\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>UltrakillDeps\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.JSONSerializeModule">
-      <HintPath>\UltrakillDeps\UnityEngine.JSONSerializeModule.dll</HintPath>
+      <HintPath>UltrakillDeps\UnityEngine.JSONSerializeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>\UltrakillDeps\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>UltrakillDeps\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>\UltrakillDeps\UnityEngine.UI.dll</HintPath>
+      <HintPath>UltrakillDeps\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIElementsModule">
-      <HintPath>\UltrakillDeps\UnityEngine.UIElementsModule.dll</HintPath>
+      <HintPath>UltrakillDeps\UnityEngine.UIElementsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <HintPath>\UltrakillDeps\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>UltrakillDeps\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 
-	<Target Name="PostBuild" AfterTargets="Build">
+	<Target Name="PostBuild" AfterTargets="Build" Condition="'$(GITHUB_ACTIONS)' != 'true'">
 		<Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFiles="$(UltrakillPath)\MultiplayerUtil.dll" />
 		<Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFiles="C:\UltrakillDeps\MultiplayerUtil.dll" />
 	</Target>
