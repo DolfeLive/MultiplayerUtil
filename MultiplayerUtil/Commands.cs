@@ -100,7 +100,7 @@ public class Commands
         public async void Execute(GameConsole.Console con, string[] args)
         {
             Clogger.Log("Retriving all open lobbies");
-            List<Lobby> getthingy = getthingy = await MultiplayerUtil.LobbyManager.FetchLobbies(("Idk", "idk"));
+            List<Lobby> getthingy = getthingy = await MultiplayerUtil.LobbyManager.FetchLobbies(("UKCM", "EtcEtc"));
 
 
             foreach (Lobby lob in getthingy)
