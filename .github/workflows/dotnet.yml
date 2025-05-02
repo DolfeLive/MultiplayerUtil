@@ -58,6 +58,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./publish_output/*.dll
-        asset_name: application.dll
+        asset_path: ./publish_output/MultiplayerUtil.dll
+        asset_name: MultiplayerUtil.dll
         asset_content_type: application/octet-stream
