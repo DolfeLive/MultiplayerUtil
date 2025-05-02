@@ -108,11 +108,11 @@ public class SteamManager : MonoBehaviour
             Callbacks.OnLobbyCreated.Invoke(lobby);
         };
         
-        SteamNetworking.OnP2PSessionRequest += (id) =>
-        {
-            Clogger.Log($"P2P requested from: {id}");
-            Callbacks.OnP2PSessionRequest.Invoke(id);
-        };
+        //SteamNetworking.OnP2PSessionRequest += (id) =>
+        //{
+        //    Clogger.Log($"P2P requested from: {id}");
+        //    Callbacks.OnP2PSessionRequest.Invoke(id);
+        //};
 
         SteamNetworking.OnP2PConnectionFailed += (id, sessionError) =>
         {
@@ -134,6 +134,11 @@ public class SteamManager : MonoBehaviour
                 }
 
                 Callbacks.OnLobbyMemberJoined.Invoke(l, f);
+            }
+
+            if (isLobbyOwner && BannedSteamIds.Contains(f.Id))
+            {
+                
             }
         };
 
@@ -427,12 +432,19 @@ public class SteamManager : MonoBehaviour
             if (data != (null, null))
             {
                 Clogger.Log("P2P Message recived");
-                
-                if (Data.TryDeserialize<string>(data.Item1, out string result) && result == "Hello!§")
+                try
                 {
-                    Clogger.Log("The p2p message was just a init for a p2p");
-                    return;
+                    string msgString = System.Text.Encoding.Default.GetString(data.Item1);
+
+                    if (msgString == SteamManager.p2pEstablishMessage/* && !BlockedSteamIds.Contains(data.Item2?)*/)
+                    {
+                        Clogger.Log("Received P2P intro string message!");
+                        return;
+                    }
+
                 }
+                catch
+                { }
                 
                 Callbacks.p2pMessageReceived.Invoke(data);
             }
@@ -734,19 +746,6 @@ public static class ObserveManager
 
     public static void OnMessageRecived(byte[] message, SteamId? sender)
     {
-        try
-        {
-            string msgString = System.Text.Encoding.Default.GetString(message);
-
-            if (msgString == SteamManager.p2pEstablishMessage)
-            {
-                Clogger.Log("Received P2P intro string message!");
-            }
-
-        }
-        catch
-        {        }
-
         NetworkWrapper recivedData = null;
         try
         {
