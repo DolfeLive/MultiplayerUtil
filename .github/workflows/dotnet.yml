@@ -9,12 +9,11 @@ on:
   pull_request:
     branches: [ "master" ]
 
+
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
-    steps:
+    runs-on: self-hosted
+    steps: 
     - uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -22,8 +21,10 @@ jobs:
         dotnet-version: 8.0.x
     - name: Restore dependencies
       run: dotnet restore
+    
     - name: Build
       run: dotnet build --configuration Release --no-restore --output publish_output
+    
     - name: Test
       run: dotnet test --no-build --verbosity normal
     
@@ -32,3 +33,27 @@ jobs:
       with:
         name: published-app
         path: publish_output
+
+    - name: Create Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        draft: false
+        prerelease: false
+    
+    - name: Upload DLL to Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./publish_output/*.dll
+        asset_name: application.dll
+        asset_content_type: application/octet-stream
