@@ -183,7 +183,7 @@ public class Commands
         {
             Clogger.Log($"Current steam id: {SteamManager.instance.selfID}");
             MultiplayerUtil.SteamManager.instance.EstablishP2P(SteamManager.instance.selfID);
-            MultiplayerUtil.SteamManager.instance.server.besties.Add(new Friend(SteamManager.instance.selfID));
+            MultiplayerUtil.SteamManager.instance.server.besties.Add(SteamManager.instance.selfID);
         }
     }
 
