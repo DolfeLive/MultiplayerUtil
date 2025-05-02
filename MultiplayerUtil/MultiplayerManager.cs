@@ -511,7 +511,7 @@ public class SteamManager : MonoBehaviour
         current_lobby?.SetData("members", $"1/{maxPlayers}");
         current_lobby?.SetData("Owner", SteamClient.Name);
 
-        Clogger.Log($"Lobby Created, id: {current_lobby?.Id}, {isLobbyOwner}");
+        Clogger.Log($"Lobby Created, id: {current_lobby?.Id}");
     }
 
     // Help collected from jaket github https://github.com/xzxADIxzx/Join-and-kill-em-together/blob/main/src/Jaket/Net/LobbyController.cs
