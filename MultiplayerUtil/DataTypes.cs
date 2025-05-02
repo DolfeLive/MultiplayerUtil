@@ -91,7 +91,7 @@ public static class Data
         }
         catch (Exception ex)
         {
-            Clogger.LogError($"Failed to deserialize data: {ex.Message}");
+            Clogger.LogError($"Failed to deserialize data: {ex.Message}, Data: {serializedData}");
             throw;
         }
     }

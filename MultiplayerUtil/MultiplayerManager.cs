@@ -10,7 +10,7 @@ public class SteamManager : MonoBehaviour
 
     public const float importantUpdatesASec = 33.3f;
     public const float unimportantUpdatesAMin = 6;
-    private string p2pEstablishMessage = "IWouldLikeToEstablishP2P!§Ÿ";
+    private string p2pEstablishMessage = "IWouldLikeToEstablishP2P!";
 
     // Runtime
     public Lobby? current_lobby;
@@ -231,6 +231,12 @@ public class SteamManager : MonoBehaviour
     public bool EstablishP2P(dynamic bestie)
     {
         string HelloP2P = p2pEstablishMessage;
+        NetworkWrapper wrapper = new()
+        {
+            ClassType = "P2PIntro",
+            ClassData = Data.Serialize(HelloP2P)
+        };
+
         bool Result = false;
         switch (bestie)
         {
@@ -353,7 +359,6 @@ public class SteamManager : MonoBehaviour
 
         try
         {
-            
             NetworkWrapper wrapper = new()
             {
                 ClassType = data.GetType().AssemblyQualifiedName,
@@ -738,6 +743,10 @@ public static class ObserveManager
         try
         {
             recivedData = Data.Deserialize<NetworkWrapper>(message);
+            if (recivedData.ClassType == "P2PIntro")
+            {
+                Clogger.Log("P2p intro recived!");
+            }
         }
         catch (InvalidCastException e)
         {
