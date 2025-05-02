@@ -379,7 +379,7 @@ public class SteamManager : MonoBehaviour
             Clogger.Log($"Data Send Exception: {e}");
         }
     }
-
+     
     public void LobbyOwnerSend(object data, SendMethod sendMethod)
     {
         if (current_lobby == null) return;
