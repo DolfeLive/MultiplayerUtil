@@ -74,7 +74,7 @@
     </Reference>
   </ItemGroup>
 
-	<Target Name="PostBuild" AfterTargets="Build">
+	<Target Name="PostBuild" AfterTargets="Build" Condition="'$(GITHUB_ACTIONS)' != 'true'">
 		<Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFiles="$(UltrakillPath)\MultiplayerUtil.dll" />
 		<Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFiles="C:\UltrakillDeps\MultiplayerUtil.dll" />
 	</Target>
