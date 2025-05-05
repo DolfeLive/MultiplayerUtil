@@ -194,21 +194,27 @@ public static class LobbyManager
     }
 
     /// <summary>
-    /// 
+    /// Bans a player from ever joining the lobby again
     /// </summary>
-    /// <param name="steamId"></param>
+    /// <param name="steamId">The user's steamid taht you want to ban</param>
     public static void BanUserFromLobby(SteamId steamId)
     {
-
+        AuthoritativePacket packet = new AuthoritativePacket();
+        packet.type = AuthoritativeTypes.Banned;
+        packet.id = steamId;
+        SendData(packet, SendMethod.Reliable);
     }
 
     /// <summary>
-    /// 
+    /// Kicks a player from the lobby
     /// </summary>
-    /// <param name="steamId"></param>
+    /// <param name="steamId">The user's steamid to kick</param>
     public static void KickUserFromLobby(SteamId steamId)
     {
-
+        AuthoritativePacket packet = new AuthoritativePacket();
+        packet.type = AuthoritativeTypes.Kicked;
+        packet.id = steamId;
+        SendData(packet, SendMethod.Reliable);
     }
 
 }
