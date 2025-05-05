@@ -64,3 +64,14 @@ jobs:
         asset_path: ./publish_output/MultiplayerUtil.dll
         asset_name: MultiplayerUtil.dll
         asset_content_type: application/octet-stream
+     
+    - name: Upload XML to Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./publish_output/MultiplayerUtil.xml
+        asset_name: MultiplayerUtil.xml
+        asset_content_type: text/xml
