@@ -199,6 +199,7 @@ public static class LobbyManager
     /// <param name="steamId">The user's steamid taht you want to ban</param>
     public static void BanUserFromLobby(SteamId steamId)
     {
+        if (!isLobbyOwner) return;
         AuthoritativePacket packet = new AuthoritativePacket();
         packet.type = AuthoritativeTypes.Banned;
         packet.id = steamId;
@@ -211,6 +212,7 @@ public static class LobbyManager
     /// <param name="steamId">The user's steamid to kick</param>
     public static void KickUserFromLobby(SteamId steamId)
     {
+        if (!isLobbyOwner) return;
         AuthoritativePacket packet = new AuthoritativePacket();
         packet.type = AuthoritativeTypes.Kicked;
         packet.id = steamId;
