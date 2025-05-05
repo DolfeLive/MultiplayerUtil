@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Runtime.CompilerServices;
 
 namespace MultiplayerUtil;
@@ -9,7 +10,7 @@ public class SteamManager : MonoBehaviour
 
 
     public const float importantUpdatesASec = 33.3f;
-    public const float unimportantUpdatesAMin = 6;
+    public const float unimportantUpdatesAMin = 12;
     public static string p2pEstablishMessage = "IWouldLikeToEstablishP2P!";
 
     // Runtime
@@ -17,6 +18,7 @@ public class SteamManager : MonoBehaviour
 
     public List<SteamId> BannedSteamIds = new();
     public List<SteamId> BlockedSteamIds = new();
+    public static List<SteamId?> BannedLobbies = new();
 
 
     public SteamId selfID;
@@ -220,7 +222,7 @@ public class SteamManager : MonoBehaviour
                 client.connectedPeers.Remove(Fri.Id);
                 Closep2P(Fri);
             }
-            Callbacks.OnLobbyMemberLeave.Invoke(Lob, Fri);
+            Callbacks.OnLobbyMemberLeave.Invoke(Fri.Id);
             Clogger.Log($"Lobby member left: {Fri.Name}");
         };
 
@@ -236,11 +238,11 @@ public class SteamManager : MonoBehaviour
                 client.connectedPeers.Remove(Fri.Id);
                 Closep2P(Fri);
             }
-            Callbacks.OnLobbyMemberLeave.Invoke(Lob, Fri);
+            Callbacks.OnLobbyMemberLeave.Invoke(Fri.Id);
             Clogger.Log($"Lobby member disconnected: {Fri.Name}");
         };
 
-        SteamMatchmaking.OnLobbyMemberKicked += (Lob, Fri, Kicker) =>
+        /*SteamMatchmaking.OnLobbyMemberKicked += (Lob, Fri, Kicker) =>
         {
             if (isLobbyOwner)
             {
@@ -252,7 +254,7 @@ public class SteamManager : MonoBehaviour
                 client.connectedPeers.Remove(Fri.Id);
                 Closep2P(Fri);
             }
-            Callbacks.OnLobbyMemberLeave.Invoke(Lob, Fri);
+            Callbacks.OnLobbyMemberLeave.Invoke(Fri.Id);
             Clogger.Log($"Lobby Member kicked: {Fri.Name}, Kicker: {Kicker.Name}");
         };
 
@@ -268,11 +270,83 @@ public class SteamManager : MonoBehaviour
                 client.connectedPeers.Remove(Banne.Id);
                 Closep2P(Banne);
             }
-            Callbacks.OnLobbyMemberLeave.Invoke(Lob, Banne);
-            Callbacks.OnLobbyMemberBanned.Invoke(Banne);
+            Callbacks.OnLobbyMemberLeave.Invoke(Banne.Id);
+            Callbacks.OnLobbyMemberBanned.Invoke(Banne.Id);
             Clogger.Log($"Lobby Member Banned: {Banne.Name}, Banner: {Kicker.Name}");
-        };
+        };*/
+
+        ObserveManager.SubscribeToType(typeof(AuthoritativePacket), out Callbacks.SenderUnityEvent AuthorityImposed);
+        AuthorityImposed.AddListener(_ =>
+        {
+            SteamId? sender = _.Item2;
+            if (sender != current_lobby?.Owner.Id) return;
+
+            AuthoritativePacket packet = Data.Deserialize<AuthoritativePacket>(_.Item1);
+
+            if (packet.id == selfID)
+                switch (packet.type)
+                {
+                    case AuthoritativeTypes.Kicked:
+                        foreach (Friend member in current_lobby?.Members)
+                        {
+                            Closep2P(member);
+                        }
+                        if (isLobbyOwner)
+                        {
+                            server.besties.Clear();
+                        }
+                        else
+                        {
+                            client.connectedPeers.Clear();
+                        }
+
+                        current_lobby?.Leave();
+                        current_lobby = null!;
+                        break;
+
+                    case AuthoritativeTypes.Banned:
+                        foreach (Friend member in current_lobby?.Members)
+                        {
+                            Closep2P(member);
+                        }
+                        if (isLobbyOwner)
+                        {
+                            server.besties.Clear();
+                        }
+                        else
+                        {
+                            client.connectedPeers.Clear();
+                        }
+
+                        BannedLobbies.Add(current_lobby?.Id);
+                        current_lobby?.Leave();
+                        current_lobby = null!;
+                        break;
+                }
+            else
+            {
+                Closep2P(packet.id);
+                Clogger.Log($"player {(packet.type == AuthoritativeTypes.Kicked ? "kicked" : "banned")}: {packet.id}");
+                if (isLobbyOwner)
+                {
+                    server.besties.Remove(packet.id);
+                }
+                else
+                {
+                    client.connectedPeers.Remove(packet.id);
+                }
+                if (packet.type == AuthoritativeTypes.Banned)
+                {
+                    Callbacks.OnLobbyMemberBanned.Invoke(packet.id);
+                }
+                else if (packet.type == AuthoritativeTypes.Kicked)
+                {
+                    Callbacks.OnLobbyMemberLeave.Invoke(packet.id);
+                }
+            }
+        });
     }
+
     public bool EstablishP2P(dynamic bestie)
     {
         bool Result = false;
@@ -728,7 +802,7 @@ public static class Callbacks
     /// <summary>
     /// Invoked when a member leaves the Steam lobby.
     /// </summary>
-    public static UnityEvent<Lobby, Friend> OnLobbyMemberLeave = new UnityEvent<Lobby, Friend>();
+    public static UnityEvent<SteamId> OnLobbyMemberLeave = new UnityEvent<SteamId>();
 
     /// <summary>
     /// Invoked when a chat message is received in the lobby.
@@ -748,7 +822,7 @@ public static class Callbacks
     /// <summary>
     /// Invoked when a lobby member is banned.
     /// </summary>
-    public static UnityEvent<Friend> OnLobbyMemberBanned = new UnityEvent<Friend>();
+    public static UnityEvent<SteamId> OnLobbyMemberBanned = new UnityEvent<SteamId>();
 
     /// <summary>
     /// Invoked when the local user successfully enters a lobby.
@@ -810,4 +884,16 @@ public static class ObserveManager
         }
     }
 
+}
+
+
+public enum AuthoritativeTypes
+{
+    Kicked,
+    Banned,
+}
+
+public class AuthoritativePacket {
+    public AuthoritativeTypes type;
+    public SteamId id;
 }

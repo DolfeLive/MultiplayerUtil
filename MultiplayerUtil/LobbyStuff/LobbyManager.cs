@@ -70,8 +70,11 @@ public static class LobbyManager
             if (lobbyList != null)
             {
                 foundLobbies = lobbyList
-                    .Where(lobby => lobby.Data.Any(data =>
-                        data.Key == modIdentifierKVP.Item1 && data.Value == modIdentifierKVP.Item2))
+                    .Where(lobby =>
+                        lobby.Data.Any(data =>
+                            data.Key == modIdentifierKVP.Item1 &&
+                            data.Value == modIdentifierKVP.Item2) &&
+                        !SteamManager.BannedLobbies.Contains(lobby.Id))
                     .ToList();
             }
         }
@@ -190,5 +193,22 @@ public static class LobbyManager
         SteamManager.instance.BlockedSteamIds.Clear();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="steamId"></param>
+    public static void BanUserFromLobby(SteamId steamId)
+    {
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="steamId"></param>
+    public static void KickUserFromLobby(SteamId steamId)
+    {
+
+    }
 
 }
