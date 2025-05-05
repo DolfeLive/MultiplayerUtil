@@ -4,6 +4,12 @@ namespace MultiplayerUtil;
 
 public static class Logger
 {
+    public static void ExtraLog(string message)
+    {
+        if (LobbyManager.extraLogging)
+            Log(message, EType.None);
+    }
+
     public static void Log(string message) => Log(message, EType.None);
     public static void LogWarning(string message) => Log(message, EType.None, ELogType.Warning);
     public static void LogError(string message) => Log(message, EType.None, ELogType.Error);

@@ -8,6 +8,15 @@ public static class LobbyManager
     public static SteamId selfID => SteamManager.instance.selfID;
 
     /// <summary>
+    /// If MultiplayerUtil should log more messages, useful for debugging and making mods
+    /// </summary>
+#if RELEASE
+    public static bool extraLogging = false;
+#elif DEBUG
+    public static bool extraLogging = true;
+#endif
+
+    /// <summary>
     /// How many important updates are sent a second, approx 30fps
     /// </summary>
     public static float importantUpdatesASec

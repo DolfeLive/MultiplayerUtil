@@ -30,7 +30,7 @@ public class Serveier // Read it like its french, also yes i named it this on pu
             if (SteamManager.SelfP2PSafeguards)
                 if (peerId == LobbyManager.selfID)
                 {
-                    Clogger.UselessLog("Skipping sending p2p to self");
+                    //Clogger.UselessLog("Skipping sending p2p to self");
                     return;
                 }
             P2PSend sendType = Data.ConvertSendMethodToP2PSend(sendMethod);

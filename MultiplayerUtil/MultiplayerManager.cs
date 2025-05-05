@@ -106,35 +106,35 @@ public class SteamManager : MonoBehaviour
 
         SteamMatchmaking.OnLobbyCreated += (result, lobby) =>
         {
-            Clogger.Log($"Lobby Created, result: {result}, lobby: {lobby.Id}");
+            Clogger.ExtraLog($"Lobby Created, result: {result}, lobby: {lobby.Id}");
             Callbacks.OnLobbyCreated.Invoke(lobby);
         };
         
         SteamNetworking.OnP2PSessionRequest += (id) =>
         {
-            Clogger.Log($"P2P requested from: {id}");
+            Clogger.ExtraLog($"P2P requested from: {id}");
             // Callbacks.OnP2PSessionRequest.Invoke(id);
             
             if (SelfP2PSafeguards)
                 if (id == selfID)
                 {
-                    Clogger.Log("P2p comes from self, skipping");
+                    //Clogger.Log("P2p comes from self, skipping");
                     return;
                 }
             if (BannedSteamIds.Contains(id))
             {
-                Clogger.Log($"P2P request from banned user: {id}");
+                Clogger.ExtraLog($"P2P request from banned user: {id}");
                 return;
             }
             if (client.connectedPeers.Contains(id))
             {
-                Clogger.Log($"P2P request from already connected user: {id}");
+                Clogger.ExtraLog($"P2P request from already connected user: {id}");
                 return;
             }
             bool accepted = SteamNetworking.AcceptP2PSessionWithUser(id);
             if (accepted)
             {
-                Clogger.Log($"P2P session accepted with: {id}");
+                Clogger.ExtraLog($"P2P session accepted with: {id}");
                 if (isLobbyOwner)
                 {
                     server.besties.Add(id);
@@ -146,7 +146,7 @@ public class SteamManager : MonoBehaviour
             }
             else
             {
-                Clogger.Log($"P2P session request failed with: {id}");
+                Clogger.ExtraLog($"P2P session request failed with: {id}");
             }
             
             
@@ -154,13 +154,13 @@ public class SteamManager : MonoBehaviour
 
         SteamNetworking.OnP2PConnectionFailed += (id, sessionError) =>
         {
-            Clogger.Log($"P2P Connection failed, id: {id}, error: {sessionError}");
+            Clogger.LogWarning($"P2P Connection failed, id: {id}, error: {sessionError}");
             Callbacks.OnP2PConnectionFailed.Invoke(id, sessionError);
         };
 
         SteamMatchmaking.OnLobbyMemberJoined += (l, f) =>
         {
-            Clogger.Log($"Lobby member joined: {f.Name}");
+            Clogger.ExtraLog($"Lobby member joined: {f.Name}");
             if (f.Id != selfID && !BannedSteamIds.Contains(f.Id))
             {
                 bool p2pEstablished = EstablishP2P(f);
@@ -187,7 +187,7 @@ public class SteamManager : MonoBehaviour
         SteamMatchmaking.OnLobbyEntered += (l) => {
             if (!String.IsNullOrEmpty(l.Owner.Name) && l.Owner.Id != selfID)
             {
-                Clogger.Log($"Joined Lobby: {l.Owner.Name}");
+                Clogger.ExtraLog($"Joined Lobby: {l.Owner.Name}");
                 client.Connect(l.Owner.Id);
                 
                 foreach (var member in l.Members)
@@ -223,7 +223,7 @@ public class SteamManager : MonoBehaviour
                 Closep2P(Fri);
             }
             Callbacks.OnLobbyMemberLeave.Invoke(Fri.Id);
-            Clogger.Log($"Lobby member left: {Fri.Name}");
+            Clogger.ExtraLog($"Lobby member left: {Fri.Name}");
         };
 
         SteamMatchmaking.OnLobbyMemberDisconnected += (Lob, Fri) =>
@@ -239,7 +239,7 @@ public class SteamManager : MonoBehaviour
                 Closep2P(Fri);
             }
             Callbacks.OnLobbyMemberLeave.Invoke(Fri.Id);
-            Clogger.Log($"Lobby member disconnected: {Fri.Name}");
+            Clogger.ExtraLog($"Lobby member disconnected: {Fri.Name}");
         };
 
         /*SteamMatchmaking.OnLobbyMemberKicked += (Lob, Fri, Kicker) =>
@@ -326,7 +326,7 @@ public class SteamManager : MonoBehaviour
             else
             {
                 Closep2P(packet.id);
-                Clogger.Log($"player {(packet.type == AuthoritativeTypes.Kicked ? "kicked" : "banned")}: {packet.id}");
+                Clogger.ExtraLog($"player {(packet.type == AuthoritativeTypes.Kicked ? "kicked" : "banned")}: {packet.id}");
                 if (isLobbyOwner)
                 {
                     server.besties.Remove(packet.id);
@@ -357,7 +357,7 @@ public class SteamManager : MonoBehaviour
             case Friend friend:
                 if (friend.Id.Value == selfID.Value)
                 {
-                    Clogger.Log("Skippng establishing p2p with self");
+                    Clogger.ExtraLog("Skippng establishing p2p with self");
                     return true;
                 }
                 Clogger.StackTraceLog($"Establishing p2p with: {friend.Name}, {friend.Id}");
@@ -368,7 +368,7 @@ public class SteamManager : MonoBehaviour
                 if (SelfP2PSafeguards)
                     if (steamId.Value == selfID.Value)
                     {
-                        Clogger.Log("Skippng establishing p2p with self");
+                        Clogger.ExtraLog("Skippng establishing p2p with self");
                         return true;
                     }
                 Clogger.StackTraceLog($"Establishing p2p with: {steamId}");
@@ -408,7 +408,7 @@ public class SteamManager : MonoBehaviour
             yield break;
         }
 
-        Clogger.Log("Data Loop Init Activated");
+        Clogger.ExtraLog("Data Loop Init Activated");
         float interval = 1f / importantUpdatesASec;
         float unimportantInterval = 60f / unimportantUpdatesAMin;
 
@@ -463,7 +463,7 @@ public class SteamManager : MonoBehaviour
         finally
         {
             CheckForP2P = false;
-            Clogger.Log("DataLoopInit ending");
+            Clogger.ExtraLog("DataLoopInit ending");
         }
     }
 
@@ -481,21 +481,14 @@ public class SteamManager : MonoBehaviour
 
             byte[] serializedData = Data.Serialize(wrapper);
 
-            if (current_lobby != null)
-            {
-                if (isLobbyOwner)
-                    server.Send(serializedData, sendMethod);
-                else
-                    client.Send(serializedData, sendMethod);
-            }
+            if (isLobbyOwner)
+                server.Send(serializedData, sendMethod);
             else
-            {
-                Clogger.Log("Current Lobby is null");
-            }
+                client.Send(serializedData, sendMethod);
         }
         catch (Exception e)
         {
-            Clogger.Log($"Data Send Exception: {e}");
+            Clogger.ExtraLog($"Data Send Exception: {e}");
         }
     }
     
@@ -532,7 +525,7 @@ public class SteamManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Clogger.Log($"Data Send Exception: {e}");
+            Clogger.ExtraLog($"Data Send Exception: {e}");
         }
     }
 
@@ -545,14 +538,13 @@ public class SteamManager : MonoBehaviour
             (byte[], SteamId?) data = CheckForP2PMessages();
             if (data != (null, null))
             {
-                Clogger.Log("P2P Message recived");
                 try
                 {
                     string msgString = System.Text.Encoding.Default.GetString(data.Item1);
  
                     if (msgString == SteamManager.p2pEstablishMessage/* && !BlockedSteamIds.Contains(data.Item2?)*/)
                     {
-                        Clogger.Log("Received P2P intro string message!");
+                        Clogger.ExtraLog("Received P2P intro string message!");
                         return;
                     }
 
@@ -573,7 +565,7 @@ public class SteamManager : MonoBehaviour
             try
             {
                 ReInit(_MultiplayerUtil.appId == 480u ? true : false);
-                Clogger.Log("Reinited steam");
+                Clogger.ExtraLog("Reinited steam");
             }
             catch (Exception e) { Clogger.LogError($"STEAM ERROR: {e}"); Clogger.LogWarning("Try launching steam if it isnt launched!"); }
 
@@ -636,7 +628,7 @@ public class SteamManager : MonoBehaviour
         current_lobby?.SetData("members", $"1/{maxPlayers}");
         current_lobby?.SetData("Owner", SteamClient.Name);
 
-        Clogger.Log($"Lobby Created, id: {current_lobby?.Id}");
+        Clogger.ExtraLog($"Lobby Created, id: {current_lobby?.Id}");
     }
 
     // Help collected from jaket github https://github.com/xzxADIxzx/Join-and-kill-em-together/blob/main/src/Jaket/Net/LobbyController.cs
@@ -645,14 +637,14 @@ public class SteamManager : MonoBehaviour
         try
         {
             server = null;
-            Clogger.Log("Joining Lobby with ID");
+            Clogger.ExtraLog("Joining Lobby with ID");
             Lobby lob = new Lobby(id);
 
             RoomEnter result = await lob.Join();
 
             if (result == RoomEnter.Success)
             {
-                Clogger.Log($"Lobby join Success: {result}");
+                Clogger.ExtraLog($"Lobby join Success: {result}");
                 isLobbyOwner = false;
                 current_lobby = lob;
 
@@ -688,14 +680,14 @@ public class SteamManager : MonoBehaviour
                 {
                     if (!Sender.IsValid)
                     {
-                        Clogger.Log("Sender is null skipping");
+                        Clogger.ExtraLog("Sender is null skipping");
                         continue;
                     }
-                    Clogger.Log($"New p2p: {Sender}");
+
                     if (SelfP2PSafeguards)
                         if (Sender == selfID)
                         {
-                            Clogger.Log("P2p comes from self, skipping");
+                            //Clogger.Log("P2p comes from self, skipping");
                             continue;
                         }
 
@@ -703,7 +695,7 @@ public class SteamManager : MonoBehaviour
                 }
                 else
                 {
-                    Clogger.Log($"p2p failed: {Sender}");
+                    Clogger.ExtraLog($"p2p failed: {Sender}");
 
                     return (null, null);
                 }
@@ -737,7 +729,7 @@ public class SteamManager : MonoBehaviour
                     lobby.SetData("members", server.besties.Count.ToString());
                     lobby.SetData("Owner", thatMember.Name);
                     lobby.IsOwnedBy(thatMember.Id);
-                    Clogger.Log($"Setting Lobby Owner to: {thatMember.Name}");
+                    Clogger.ExtraLog($"Setting Lobby Owner to: {thatMember.Name}");
                 }   
             }
         }

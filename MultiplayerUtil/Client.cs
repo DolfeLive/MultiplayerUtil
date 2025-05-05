@@ -39,7 +39,7 @@ public class Client
             if (SteamManager.SelfP2PSafeguards)
                 if (peerId == LobbyManager.selfID)
                 {
-                    Clogger.UselessLog("Skipping sending p2p to self");
+                    //Clogger.UselessLog("Skipping sending p2p to self");
                     return;
                 }
             P2PSend sendType = Data.ConvertSendMethodToP2PSend(sendMethod);
