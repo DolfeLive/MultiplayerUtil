@@ -481,17 +481,10 @@ public class SteamManager : MonoBehaviour
 
             byte[] serializedData = Data.Serialize(wrapper);
 
-            if (current_lobby != null)
-            {
-                if (isLobbyOwner)
-                    server.Send(serializedData, sendMethod);
-                else
-                    client.Send(serializedData, sendMethod);
-            }
+            if (isLobbyOwner)
+                server.Send(serializedData, sendMethod);
             else
-            {
-                Clogger.Log("Current Lobby is null");
-            }
+                client.Send(serializedData, sendMethod);
         }
         catch (Exception e)
         {
