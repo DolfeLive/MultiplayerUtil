@@ -5,7 +5,8 @@
     <Nullable>enable</Nullable>
 	<LangVersion>latest</LangVersion>
 	<FileAlignment>4096</FileAlignment>
-    	<PublishSingleFile>true</PublishSingleFile>
+    <PublishSingleFile>true</PublishSingleFile>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -77,6 +78,7 @@
 	<Target Name="PostBuild" AfterTargets="Build" Condition="'$(GITHUB_ACTIONS)' != 'true'">
 		<Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFiles="$(UltrakillPath)\MultiplayerUtil.dll" />
 		<Copy SourceFiles="$(TargetDir)MultiplayerUtil.dll" DestinationFiles="C:\UltrakillDeps\MultiplayerUtil.dll" />
+		<Copy SourceFiles="$(TargetDir)MultiplayerUtil.xml" DestinationFiles="C:\UltrakillDeps\MultiplayerUtil.xml" />
 	</Target>
 
 
