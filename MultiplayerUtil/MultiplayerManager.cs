@@ -41,7 +41,7 @@ public class SteamManager : MonoBehaviour
     public static bool SelfP2PSafeguards = true;
 #endif
 
-    public const int channelToUse = 257; // This is for testing the max channels
+    public const int channelToUse = int.MaxValue; // This is for testing the max channels
 
     void Awake()
     {
