@@ -1,4 +1,6 @@
-﻿ 
+﻿using Newtonsoft.Json;
+using System.Text;
+
 namespace MultiplayerUtil;
 
 /*
@@ -83,11 +85,8 @@ public static class Data
 
         try
         {
-            using (MemoryStream ms = new MemoryStream(serializedData))
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                return (T)formatter.Deserialize(ms);
-            }
+            var json = Encoding.UTF8.GetString(serializedData);
+            return JsonConvert.DeserializeObject<T>(json);
         }
         catch (Exception ex)
         {
@@ -106,12 +105,9 @@ public static class Data
 
         try
         {
-            using (MemoryStream ms = new MemoryStream(serializedData))
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                result = (T)formatter.Deserialize(ms);
-                return true;
-            }
+            var json = Encoding.UTF8.GetString(serializedData);
+            result = JsonConvert.DeserializeObject<T>(json);
+            return true;
         }
         catch (Exception ex)
         {
@@ -130,12 +126,8 @@ public static class Data
 
         try
         {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(ms, data);
-                return ms.ToArray();
-            }
+            var json = JsonConvert.SerializeObject(data);
+            return Encoding.UTF8.GetBytes(json);
         }
         catch (Exception ex)
         {

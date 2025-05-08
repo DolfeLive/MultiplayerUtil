@@ -34,6 +34,9 @@
     <Reference Include="Facepunch.Steamworks.Win64">
       <HintPath>UltrakillDeps\Facepunch.Steamworks.Win64.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\_UltrakillDeps\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="plog">
       <HintPath>UltrakillDeps\plog.dll</HintPath>
     </Reference>
