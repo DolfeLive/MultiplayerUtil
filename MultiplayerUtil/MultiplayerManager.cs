@@ -122,6 +122,7 @@ public class SteamManager : MonoBehaviour
                     //Clogger.Log("P2p comes from self, skipping");
                     return;
                 }
+
             if (BannedSteamIds.Contains(id))
             {
                 Clogger.ExtraLog($"P2P request from banned user: {id}");
@@ -135,7 +136,7 @@ public class SteamManager : MonoBehaviour
             bool accepted = SteamNetworking.AcceptP2PSessionWithUser(id);
             if (accepted)
             {
-                Clogger.ExtraLog($"P2P session accepted with: {id}");
+                Clogger.Log($"P2P session accepted with: {id}");
                 if (isLobbyOwner)
                 {
                     server.besties.Add(id);
@@ -356,12 +357,13 @@ public class SteamManager : MonoBehaviour
         switch (bestie)
         {
             case Friend friend:
-                if (friend.Id.Value == selfID.Value)
-                {
-                    Clogger.ExtraLog("Skippng establishing p2p with self");
-                    return true;
-                }
-                Clogger.StackTraceLog($"Establishing p2p with: {friend.Name}, {friend.Id}");
+                if (SelfP2PSafeguards)
+                    if (friend.Id.Value == selfID.Value)
+                    {
+                        Clogger.ExtraLog("Skippng establishing p2p with self");
+                        return true;
+                    }
+                Clogger.Log($"Establishing p2p with: {friend.Name}, {friend.Id}");
                 Result = SteamNetworking.SendP2PPacket(friend.Id, messageBytes);
                 return Result;
                 break;
@@ -372,7 +374,7 @@ public class SteamManager : MonoBehaviour
                         Clogger.ExtraLog("Skippng establishing p2p with self");
                         return true;
                     }
-                Clogger.StackTraceLog($"Establishing p2p with: {steamId}");
+                Clogger.Log($"Establishing p2p with: {steamId}");
                 Result = SteamNetworking.SendP2PPacket(steamId, messageBytes);
                 return Result;
                 break;
@@ -532,7 +534,7 @@ public class SteamManager : MonoBehaviour
 
     void Update()
     {
-        SteamClient.RunCallbacks();
+        //SteamClient.RunCallbacks();
 
         if (CheckForP2P)
         {
@@ -542,7 +544,7 @@ public class SteamManager : MonoBehaviour
                 try
                 {
                     string msgString = System.Text.Encoding.Default.GetString(data.Item1);
- 
+
                     if (msgString == SteamManager.p2pEstablishMessage/* && !BlockedSteamIds.Contains(data.Item2?)*/)
                     {
                         Clogger.ExtraLog("Received P2P intro string message!");
@@ -552,7 +554,7 @@ public class SteamManager : MonoBehaviour
                 }
                 catch
                 { }
-                
+
                 Callbacks.p2pMessageReceived.Invoke(data);
             }
         }
@@ -839,7 +841,6 @@ public class NetworkWrapper
 }
 
 // this system will allow users to subscribe with their class to notifications of when the specific class they are looking for is detected
-
 public static class ObserveManager
 {
     public static bool MessageReceivedLogging = false;
@@ -862,8 +863,6 @@ public static class ObserveManager
         try
         {
             recivedData = Data.Deserialize<NetworkWrapper>(message);
-            if (MessageReceivedLogging)
-                Debug.Log($"Message recived from: {sender}, data: {recivedData.ClassType/*string.Join("", message.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')))*/}");
         }
         catch (InvalidCastException e)
         {
@@ -871,7 +870,8 @@ public static class ObserveManager
             return;
         }
 
-        Clogger.Log($"Recived p2p message, sender: {sender}, type: {recivedData.ClassType}, data: {recivedData.ClassData}");
+        if (MessageReceivedLogging)
+            Clogger.Log($"Recived p2p message, sender: {sender}, type: {recivedData.ClassType}, data: {recivedData.ClassData}");
 
         Type type = Type.GetType(recivedData.ClassType);
         if (type != null && ObserveManager.subscribedEvents.TryGetValue(type, out Callbacks.SenderUnityEvent notifier))

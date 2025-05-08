@@ -1,7 +1,7 @@
 ﻿ 
 namespace MultiplayerUtil;
 
-[BepInPlugin("DolfeMods.Ultrakill.MultiplayerUtil", "ULTRAKILL MultiplayersUtil", "1.0.0")]
+[BepInPlugin("DolfeLive.Modding.MultiplayerUtil", "DolfeMultiplayersUtil", "1.0.0")]
 public class _MultiplayerUtil : BaseUnityPlugin
 {
     public static string modName = "MultiplayerUtil";
@@ -16,7 +16,7 @@ public class _MultiplayerUtil : BaseUnityPlugin
         
         Semtings.Init();
 
-        Harmony har = new Harmony("MultiplayerUtil");
+        Harmony har = new Harmony("DolfeLive.Modding.MultiplayerUtil");
         har.PatchAll();
 
         SceneManager.sceneLoaded += (Scene scene, LoadSceneMode lsm) =>
@@ -25,7 +25,7 @@ public class _MultiplayerUtil : BaseUnityPlugin
             {
                 if (smObj != null) return;
 
-                smObj = new GameObject("SteamManager PVP mod");
+                smObj = new GameObject("SteamManagerUtil");
                 smObj.AddComponent<SteamManager>();
                 DontDestroyOnLoad(smObj);
             }
