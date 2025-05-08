@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace MultiplayerUtil;
 
@@ -857,7 +858,7 @@ public static class ObserveManager
     public static void OnMessageRecived(byte[] message, SteamId? sender)
     {
         if (MessageReceivedLogging)
-            Debug.Log($"Message recived from: {sender}, data: {message}");
+            Debug.Log($"Message recived from: {sender}, data: {string.Join("", message.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')))}");
 
         NetworkWrapper recivedData = null;
         try
