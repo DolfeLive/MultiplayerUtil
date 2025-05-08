@@ -857,13 +857,13 @@ public static class ObserveManager
 
     public static void OnMessageRecived(byte[] message, SteamId? sender)
     {
-        if (MessageReceivedLogging)
-            Debug.Log($"Message recived from: {sender}, data: {string.Join("", message.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')))}");
 
         NetworkWrapper recivedData = null;
         try
         {
             recivedData = Data.Deserialize<NetworkWrapper>(message);
+            if (MessageReceivedLogging)
+                Debug.Log($"Message recived from: {sender}, data: {recivedData.ClassType/*string.Join("", message.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')))*/}");
         }
         catch (InvalidCastException e)
         {
