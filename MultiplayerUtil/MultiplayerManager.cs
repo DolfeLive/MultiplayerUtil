@@ -841,7 +841,7 @@ public class NetworkWrapper
 
 public static class ObserveManager
 {
-
+    public static bool MessageReceivedLogging = false;
     public static Dictionary<Type, Callbacks.SenderUnityEvent> subscribedEvents = new();
 
     public static void SubscribeToType(Type classType, out Callbacks.
@@ -856,6 +856,9 @@ public static class ObserveManager
 
     public static void OnMessageRecived(byte[] message, SteamId? sender)
     {
+        if (MessageReceivedLogging)
+            Debug.Log($"Message recived from: {sender}, data: {message}");
+
         NetworkWrapper recivedData = null;
         try
         {
