@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: shit-chromebook
+    runs-on: self-hosted
     
     permissions:
       contents: write
