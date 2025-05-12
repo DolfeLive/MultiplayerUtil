@@ -10,10 +10,12 @@
 
 * [Features](#features)
 * [Getting Started](#getting-started)
+* [To Do](#todo)
 * [Lobby Management](#lobby-management)
 * [Data Transmission](#data-transmission)
 * [Callbacks & Events](#callbacks--events)
 * [Best Practices](#best-practices)
+* [Ideas or Additions](#ideas-or-additions)
 * [License](#license)
 
 ---
@@ -26,8 +28,7 @@
 * Automatic serialization and deserialization of data.
 * Custom type synchronization and event based observation.
 * Optional support for using steam 480 (for testing), or mods.
-* Built-in logging and debugging hooks.
-
+* All LobbyManager methods are documented
 ---
 
 ## TODO
@@ -60,7 +61,14 @@ You can easily manage Steam lobbies via static methods under `MultiplayerUtil.Lo
 
 ```csharp
 // Create a new public lobby for 4 players
-LobbyManager.CreateLobby("Lobby", 4, true, cracked: false, mods: false, modIdentifier: ("YourMod", "Tag"));
+MU.LobbyManager.CreateLobby(
+    lobbyName: "New lobby",
+    maxPlayers: 4,
+    publicLobby: true,
+    cracked: false,
+    mods: false,
+    modIdentifier: ("YourMod", "Tag")
+);
 ```
 
 ```csharp
@@ -85,7 +93,10 @@ LobbyManager.Disconnect();
 ### Sending Data
 
 ```csharp
-LobbyManager.SendData(yourSerializableObject, SendMethod.UnreliableNoDelay);
+MyClass exampleData = new MyClass();
+exampleData.playerPos = ...;
+LobbyManager.SendData(exampleData, SendMethod.UnreliableNoDelay);
+// Make sure your class is System.Serializable
 ```
 
 Available send methods:
@@ -142,13 +153,19 @@ Callbacks.OnChatMessageReceived.AddListener(msg => Debug.Log($"Chat: {msg}"));
 
 * **Use `UnreliableNoDelay`** for real-time data (e.g., positions).
 * **Use `ReliableWithBuffering`** for sequential state or synced actions.
+* Make sure the classes that contain the data you are sending are <ins>serialized</ins>
 * Keep serialized classes small and avoid large strings.
 * Use primitives (e.g., `byte`, `short`) when possible to reduce size.
 * Catch exceptions around network operations to avoid crashes.
 
 ---
 
+## Ideas Or additions
+Just message me on discord (@dolfelive) or create a issue/pull request
+
+---
+
 ## License
 
 Dolfe AGPLish License
-Refer to LICENSE.md
+Refer to [LICENSE.md](https://github.com/DolfeLive/MultiplayerUtil/blob/master/LICENSE.md)
