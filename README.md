@@ -30,6 +30,14 @@
 
 ---
 
+# TODO
+```
+Set lobby settings method
+Add documentation for current_lobby
+
+```
+---
+
 ## Getting Started
 
 ### Prerequisites
