@@ -559,7 +559,7 @@ public class SteamManager : MonoBehaviour
             }
         }
     }
-    public async void HostLobby(string LobbyName, int? maxPlayers, bool publicLobby, bool cracked, bool cheats, bool mods, (string, string) ModLobbyIDentifiers)
+    public async void HostLobby(string LobbyName, int? maxPlayers, bool publicLobby, bool cracked, bool mods, (string, string) ModLobbyIDentifiers)
     {
         if (!SteamClient.IsValid)
         {
@@ -626,7 +626,6 @@ public class SteamManager : MonoBehaviour
 
         current_lobby?.SetData(ModLobbyIDentifiers.Item1, ModLobbyIDentifiers.Item2);
         current_lobby?.SetData("name", LobbyName);
-        current_lobby?.SetData("cheats", cheats.ToString());
         current_lobby?.SetData("mods", mods.ToString());
         current_lobby?.SetData("members", $"1/{maxPlayers}");
         current_lobby?.SetData("Owner", SteamClient.Name);
