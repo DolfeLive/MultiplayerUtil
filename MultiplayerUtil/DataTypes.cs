@@ -3,76 +3,7 @@ using System.Text;
 
 namespace MultiplayerUtil;
 
-/*
-// An example of a data packet that i made for pvp multiplayer
 
-[Serializable]
-public class DataPacket
-{
-    // Player Core stuff
-    public byte PlayerHealth;
-
-    // Pos and Movement
-    public float PositionX;
-    public float PositionY;
-    public float PositionZ;
-    public float VelocityX;
-    public float VelocityY;
-    public float VelocityZ;
-    public short RotationX;
-    public short RotationY;
-
-    // Combat State
-    public byte CurrentWeapon;
-    public byte CurrentVariation;
-    public bool IsSliding;
-    public bool IsPunching;
-
-    // Movement State
-    public bool IsWallJumping;
-    public bool IsSlamStorage;
-
-    public DataPacket(
-        int Health,
-        Vector3 Position,
-        Vector3 Velocity,
-        Vector3 Rotation,
-        int CurrentWeapon,
-        int CurrentVariation,
-        bool IsSliding,
-        bool IsPunching,
-        bool IsWallJumping,
-        bool IsSlamStorage)
-    {
-        this.PlayerHealth = (byte)Health;
-        this.PositionX = Position.x;
-        this.PositionY = Position.y;
-        this.PositionZ = Position.z;
-        this.VelocityX = Velocity.x;
-        this.VelocityY = Velocity.y;
-        this.VelocityZ = Velocity.z;
-        this.RotationX = (short)Rotation.x;
-        this.RotationY = (short)Rotation.y;
-        this.CurrentWeapon = (byte)CurrentWeapon;
-        this.CurrentVariation = (byte)CurrentVariation;
-        this.IsSliding = IsSliding;
-        this.IsPunching = IsPunching;
-        this.IsWallJumping = IsWallJumping;
-        this.IsSlamStorage = IsSlamStorage;
-    }
-
-    public void Display()
-    {
-        Console.WriteLine($"Health: {PlayerHealth}");
-        Console.WriteLine($"Position: ({PositionX:F2}, {PositionY:F2}, {PositionZ:F2})");
-        Console.WriteLine($"Velocity: ({VelocityX:F2}, {VelocityY:F2}, {VelocityZ:F2})");
-        Console.WriteLine($"Rotation: ({RotationX:F2}, {RotationY:F2}");
-        Console.WriteLine($"Weapon: {CurrentWeapon} | Variation: {CurrentVariation}");
-        Console.WriteLine($"States: Sliding={IsSliding}, WallJump={IsWallJumping}, IsSlamStorage;={IsSlamStorage}");
-    }
-}
-
-*/
 public static class Data
 {
     public static T Deserialize<T>(byte[] serializedData)
@@ -167,4 +98,100 @@ public static class Data
 
         return method;
     }
+
+    public static byte boolsToBinary(bool[] bools)
+    {
+        byte binary = 0b00000000;
+        int length = Math.Min(bools.Length, 8);
+    
+        for (int i = 0; i < length; i++)
+        {
+            if (bools[i])
+            {
+                binary |= (byte)(1 << i);
+            }
+        }
+        return binary;
+    }
+    
+    public static bool[] byteToBools(byte data)
+    {
+        bool[] result = new bool[8];
+        for (int i = 0; i < 8; i++)
+        {
+            result[i] = (data & (1 << i)) != 0;
+        }
+        return result;
+    }
 }
+
+/*
+// An example of a data packet that i made for pvp multiplayer
+
+[Serializable]
+public class DataPacket
+{
+    // Player Core stuff
+    public byte PlayerHealth;
+
+    // Pos and Movement
+    public float PositionX;
+    public float PositionY;
+    public float PositionZ;
+    public float VelocityX;
+    public float VelocityY;
+    public float VelocityZ;
+    public short RotationX;
+    public short RotationY;
+
+    // Combat State
+    public byte CurrentWeapon;
+    public byte CurrentVariation;
+    public bool IsSliding;
+    public bool IsPunching;
+
+    // Movement State
+    public bool IsWallJumping;
+    public bool IsSlamStorage;
+
+    public DataPacket(
+        int Health,
+        Vector3 Position,
+        Vector3 Velocity,
+        Vector3 Rotation,
+        int CurrentWeapon,
+        int CurrentVariation,
+        bool IsSliding,
+        bool IsPunching,
+        bool IsWallJumping,
+        bool IsSlamStorage)
+    {
+        this.PlayerHealth = (byte)Health;
+        this.PositionX = Position.x;
+        this.PositionY = Position.y;
+        this.PositionZ = Position.z;
+        this.VelocityX = Velocity.x;
+        this.VelocityY = Velocity.y;
+        this.VelocityZ = Velocity.z;
+        this.RotationX = (short)Rotation.x;
+        this.RotationY = (short)Rotation.y;
+        this.CurrentWeapon = (byte)CurrentWeapon;
+        this.CurrentVariation = (byte)CurrentVariation;
+        this.IsSliding = IsSliding;
+        this.IsPunching = IsPunching;
+        this.IsWallJumping = IsWallJumping;
+        this.IsSlamStorage = IsSlamStorage;
+    }
+
+    public void Display()
+    {
+        Console.WriteLine($"Health: {PlayerHealth}");
+        Console.WriteLine($"Position: ({PositionX:F2}, {PositionY:F2}, {PositionZ:F2})");
+        Console.WriteLine($"Velocity: ({VelocityX:F2}, {VelocityY:F2}, {VelocityZ:F2})");
+        Console.WriteLine($"Rotation: ({RotationX:F2}, {RotationY:F2}");
+        Console.WriteLine($"Weapon: {CurrentWeapon} | Variation: {CurrentVariation}");
+        Console.WriteLine($"States: Sliding={IsSliding}, WallJump={IsWallJumping}, IsSlamStorage;={IsSlamStorage}");
+    }
+}
+
+*/
