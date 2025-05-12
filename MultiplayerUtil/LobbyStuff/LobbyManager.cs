@@ -59,10 +59,10 @@ public static class LobbyManager
     /// <param name="cheats">Indicates whether cheats are enabled in the lobby.</param>
     /// <param name="mods">Indicates whether mods are enabled in the lobby.</param>
     /// <param name="modIdentifier">The identifier your mod uses when making a lobby</param>
-    public static void CreateLobby(string lobbyName, int? maxPlayers, bool publicLobby, bool cracked, bool cheats, bool mods, (string, string) modIdentifier)
+    public static void CreateLobby(string lobbyName, int? maxPlayers, bool publicLobby, bool cracked, bool mods, (string, string) modIdentifier)
     {
         Clogger.Log("Creating Lobby");
-        SteamManager.instance.HostLobby(lobbyName, maxPlayers, publicLobby, cracked, cheats, mods, modIdentifier);
+        SteamManager.instance.HostLobby(lobbyName, maxPlayers, publicLobby, cracked, mods, modIdentifier);
     }
 
     /// <summary>
