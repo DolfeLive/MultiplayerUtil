@@ -18,6 +18,9 @@ jobs:
       deployments: write
       pull-requests: write
     
+    env:
+     DOTNET_INSTALL_DIR: "$HOME/.dotnet"
+    
     steps: 
     - uses: actions/checkout@v4
     
