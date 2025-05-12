@@ -212,7 +212,6 @@ class ExampleClass1 : BaseUnityPlugin
             maxPlayers: 3,
             publicLobby: true,
             cracked: true,
-            cheats: false,
             mods: false,
             modIdentifier: ("ModIdentifier", "ModIdentifier2")
         );

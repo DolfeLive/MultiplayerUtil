@@ -82,7 +82,7 @@ public class Commands
          
         public async void Execute(GameConsole.Console con, string[] args)
         {
-            MultiplayerUtil.LobbyManager.CreateLobby("New lobby", 3, true, true, false, false, ("Idk", "idk"));
+            MultiplayerUtil.LobbyManager.CreateLobby("New lobby", 3, true, true, false, ("Idk", "idk"));
         }
     }
 
@@ -167,7 +167,7 @@ public class Commands
 
         public async void Execute(GameConsole.Console con, string[] args)
         {
-            MultiplayerUtil.LobbyManager.CreateLobby(args[0], int.Parse(args[1]), bool.Parse(args[2]), true, false, false, ("Idk", "idk"));
+            MultiplayerUtil.LobbyManager.CreateLobby(args[0], int.Parse(args[1]), bool.Parse(args[2]), true, false, ("Idk", "idk"));
         }
     }
 
