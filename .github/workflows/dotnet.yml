@@ -14,6 +14,9 @@ jobs:
     
     permissions:
       contents: write
+      issues: write
+      deployments: write
+      pull-requests: write
     
     steps: 
     - uses: actions/checkout@v4
@@ -81,6 +84,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: failure()
+
+    permissions:
+      contents: write
+      issues: write
+      deployments: write
+      pull-requests: write
     
     steps:
     - uses: actions/checkout@v4
