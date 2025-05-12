@@ -30,7 +30,7 @@
 
 ---
 
-# TODO
+## TODO
 ```
 Set lobby settings method
 Add documentation for current_lobby
